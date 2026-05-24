@@ -1,0 +1,13 @@
+{
+  "name": "claude-harness",
+  "version": "0.0.0",
+  "description": "Claude's autonomous forge harness — host project for claude-trail and follow-ons.",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "test": "node --test --experimental-strip-types tests/*.test.ts"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

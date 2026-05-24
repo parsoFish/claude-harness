@@ -1,0 +1,13 @@
+# forge scratch (per C2 — keeps these out of the PR diff)
+.forge/
+AGENT.md
+PROMPT.md
+fix_plan.md
+demo/
+_architect/
+
+# node / build
+node_modules/
+dist/
+*.log
+.DS_Store
