@@ -38,6 +38,25 @@ export function readEvents(filePath: string): EventRecord[] {
 }
 
 /**
+ * Accumulates cost_usd values from an array of EventRecord objects into a Map
+ * keyed by phase name. Events without a numeric cost_usd field are silently
+ * skipped. Returns an empty Map when no events carry cost data.
+ *
+ * @param events - Array of EventRecord objects (typically from readEvents).
+ * @returns Map<phaseName, number> — one entry per distinct phase, summing that
+ *          phase's cost_usd values.
+ */
+export function costByPhase(events: EventRecord[]): Map<string, number> {
+  const map = new Map<string, number>();
+  for (const event of events) {
+    if (typeof event.cost_usd !== 'number') continue;
+    const current = map.get(event.phase) ?? 0;
+    map.set(event.phase, current + event.cost_usd);
+  }
+  return map;
+}
+
+/**
  * Groups an array of EventRecord objects into a Map keyed by phase name.
  * Within each phase the events appear in their original insertion order.
  *
