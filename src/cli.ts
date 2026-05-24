@@ -2,6 +2,8 @@ import { existsSync, readdirSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { readEvents, rollupByPhase } from './events.ts';
 import { renderTitle, renderSummarySection, renderPhasesSection } from './trail.ts';
+import { findThemesForInitiative, renderThemesSection } from './brain.ts';
+import { renderFilesTouchedSection } from './git.ts';
 
 const initiativeId = process.argv[2];
 
@@ -58,6 +60,28 @@ for (const evt of events) {
   if (typeof evt['cost_usd'] === 'number') costUsd += evt['cost_usd'];
 }
 
+// Brain themes: look for a brain/ dir inside the cycle directory
+const brainDir = join(cycleDir, 'brain');
+const themes = findThemesForInitiative(brainDir, initiativeId);
+
+// Files touched: gracefully return empty list if git is unavailable
+// (e.g. in fixture tempdir that is not a real git repo)
+let filesTouched: string[] = [];
+const worktreePathEvent = events.find(
+  (evt) => typeof evt['worktree_path'] === 'string',
+);
+if (worktreePathEvent) {
+  const worktreePath = worktreePathEvent['worktree_path'] as string;
+  try {
+    const { getFilesTouched } = await import('./git.ts');
+    filesTouched = getFilesTouched(worktreePath, 'HEAD~1', 'HEAD');
+  } catch {
+    // git unavailable or not a repo — leave filesTouched empty
+  }
+}
+
 process.stdout.write(renderTitle(initiativeId));
 process.stdout.write(renderSummarySection(initiativeId, verdict, costUsd));
 process.stdout.write(renderPhasesSection(phaseMap));
+process.stdout.write(renderThemesSection(themes));
+process.stdout.write(renderFilesTouchedSection(filesTouched));
