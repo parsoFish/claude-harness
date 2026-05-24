@@ -1,7 +1,7 @@
 import { existsSync, readdirSync } from 'node:fs';
 import { join, resolve } from 'node:path';
-import { readEvents, rollupByPhase } from './events.ts';
-import { renderTitle, renderSummarySection, renderPhasesSection } from './trail.ts';
+import { readEvents, rollupByPhase, costByPhase } from './events.ts';
+import { renderTitle, renderSummarySection, renderPhasesSection, renderCostSection } from './trail.ts';
 import { findThemesForInitiative, renderThemesSection } from './brain.ts';
 import { renderFilesTouchedSection } from './git.ts';
 
@@ -51,6 +51,7 @@ if (!cycleDir) {
 const eventsPath = join(cycleDir, 'events.jsonl');
 const events = readEvents(eventsPath);
 const phaseMap = rollupByPhase(events);
+const costMap = costByPhase(events);
 
 // Derive verdict and cost from events (best-effort: look for a summary event or use defaults)
 let verdict = 'unknown';
@@ -83,5 +84,6 @@ if (worktreePathEvent) {
 process.stdout.write(renderTitle(initiativeId));
 process.stdout.write(renderSummarySection(initiativeId, verdict, costUsd));
 process.stdout.write(renderPhasesSection(phaseMap));
+process.stdout.write(renderCostSection(costMap));
 process.stdout.write(renderThemesSection(themes));
 process.stdout.write(renderFilesTouchedSection(filesTouched));

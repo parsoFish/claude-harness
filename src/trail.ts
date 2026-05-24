@@ -34,6 +34,32 @@ export function renderSummarySection(
 }
 
 /**
+ * Renders the cost rollup section of a trail document.
+ *
+ * @param costMap - Map produced by costByPhase: phase name → total cost in USD.
+ * @returns A markdown string containing a '## Cost rollup' heading with one
+ *          bullet per phase and a 'Total:' line — or an empty string if the
+ *          map is empty (section is silently omitted when no cost data exists).
+ */
+export function renderCostSection(costMap: Map<string, number>): string {
+  if (costMap.size === 0) return '';
+
+  const lines: string[] = ['## Cost rollup', ''];
+  let total = 0;
+
+  for (const [phase, cost] of costMap) {
+    lines.push(`- **${phase}**: $${cost.toFixed(2)}`);
+    total += cost;
+  }
+
+  lines.push('');
+  lines.push(`**Total**: $${total.toFixed(2)}`);
+  lines.push('');
+
+  return lines.join('\n');
+}
+
+/**
  * Renders the phases section of a trail document.
  *
  * @param phaseMap - Map produced by rollupByPhase: phase name → EventRecord[].
