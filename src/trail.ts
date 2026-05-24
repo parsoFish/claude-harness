@@ -79,3 +79,46 @@ export function renderPhasesSection(phaseMap: Map<string, EventRecord[]>): strin
 
   return lines.join('\n');
 }
+
+/**
+ * Renders the combined Git activity section of a trail document.
+ *
+ * Contains two sub-blocks:
+ * - `### Commits` — oneline list from getCommits() (sha + subject)
+ * - `### Files touched` — list of touched file paths from getFilesTouched()
+ *
+ * If commits is empty, emits `_(none)_` under Commits.
+ * If filePaths is empty, emits `_(none)_` under Files touched.
+ *
+ * @param commits - Array of `{sha, subject}` commit objects.
+ * @param filePaths - Array of file path strings that were touched.
+ * @returns A markdown string containing a '## Git activity' heading with both sub-blocks.
+ */
+export function renderGitActivity(
+  commits: { sha: string; subject: string }[],
+  filePaths: string[],
+): string {
+  const lines: string[] = ['## Git activity', ''];
+
+  lines.push('### Commits', '');
+  if (commits.length === 0) {
+    lines.push('_(none)_', '');
+  } else {
+    for (const commit of commits) {
+      lines.push(`- ${commit.sha} ${commit.subject}`);
+    }
+    lines.push('');
+  }
+
+  lines.push('### Files touched', '');
+  if (filePaths.length === 0) {
+    lines.push('_(none)_', '');
+  } else {
+    for (const filePath of filePaths) {
+      lines.push(`- ${filePath}`);
+    }
+    lines.push('');
+  }
+
+  return lines.join('\n');
+}
