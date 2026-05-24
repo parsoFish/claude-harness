@@ -14,21 +14,26 @@ export function renderTitle(initiativeId: string): string {
  * Renders the summary section of a trail document.
  *
  * @param initiativeId - The initiative identifier.
- * @param verdict - The outcome verdict (e.g. 'complete', 'failed').
+ * @param verdict - The cycle verdict from cycle.end metadata (e.g. 'approve', 'reject').
  * @param costUsd - Total cost in USD.
- * @returns A markdown string containing a '## Summary' heading and a paragraph
- *          mentioning the initiative id, verdict, and formatted cost.
+ * @param outcome - The cycle outcome from cycle.end metadata (e.g. 'merged', 'abandoned').
+ * @returns A markdown string containing a '## Summary' heading, a paragraph
+ *          mentioning the initiative id and cost, plus explicit Verdict and Outcome lines.
  */
 export function renderSummarySection(
   initiativeId: string,
   verdict: string,
   costUsd: number,
+  outcome: string = '(unknown)',
 ): string {
   const formattedCost = `$${costUsd.toFixed(2)}`;
   return [
     '## Summary',
     '',
     `Initiative **${initiativeId}** completed with verdict: **${verdict}**. Total cost: ${formattedCost}.`,
+    '',
+    `Verdict: ${verdict}`,
+    `Outcome: ${outcome}`,
     '',
   ].join('\n');
 }

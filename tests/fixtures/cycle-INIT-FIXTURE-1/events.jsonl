@@ -7,4 +7,4 @@
 {"phase":"developer","event":"wi.committed","timestamp":"2026-05-24T09:35:00Z","work_item_id":"WI-1","cost_usd":0.05}
 {"phase":"developer","event":"wi.started","timestamp":"2026-05-24T09:40:00Z","work_item_id":"WI-2"}
 {"phase":"developer","event":"wi.committed","timestamp":"2026-05-24T09:55:00Z","work_item_id":"WI-2","cost_usd":0.07}
-{"phase":"cycle.end","event":"cycle.complete","timestamp":"2026-05-24T10:00:00Z","verdict":"complete","cost_usd":0.12}
+{"phase":"cycle.end","event":"cycle.complete","timestamp":"2026-05-24T10:00:00Z","verdict":"approve","outcome":"merged","cost_usd":0.12}

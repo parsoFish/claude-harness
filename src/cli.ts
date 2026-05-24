@@ -1,7 +1,7 @@
 import { existsSync, readdirSync } from 'node:fs';
 import { writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
-import { readEvents, rollupByPhase, costByPhase } from './events.ts';
+import { readEvents, rollupByPhase, costByPhase, extractCycleMeta } from './events.ts';
 import { renderTitle, renderSummarySection, renderPhasesSection, renderCostSection, renderGitActivity, renderPrSection } from './trail.ts';
 import { findThemesForInitiative, renderThemesSection } from './brain.ts';
 import { readPrMetadata } from './pr.ts';
@@ -126,11 +126,12 @@ const allEvents = selectedCycleDirs.flatMap((dir) =>
 const phaseMap = rollupByPhase(allEvents);
 const costMap = costByPhase(allEvents);
 
-// Derive verdict and cost from aggregated events
-let verdict = 'unknown';
+// Derive verdict, outcome, and cost from aggregated events
+const cycleMeta = extractCycleMeta(allEvents);
+let verdict = cycleMeta.verdict;
+const outcome = cycleMeta.outcome;
 let costUsd = 0;
 for (const evt of allEvents) {
-  if (typeof evt['verdict'] === 'string') verdict = evt['verdict'];
   if (typeof evt['cost_usd'] === 'number') costUsd += evt['cost_usd'];
 }
 
@@ -208,7 +209,7 @@ if (formatValue === 'json') {
     trailContent += renderCyclesIncludedSection(selectedCycleNames);
   }
 
-  trailContent += renderSummarySection(initiativeId, verdict, costUsd);
+  trailContent += renderSummarySection(initiativeId, verdict, costUsd, outcome);
   trailContent += renderPhasesSection(phaseMap);
   trailContent += renderCostSection(costMap);
   trailContent += renderGitActivity(commits, filesTouched);

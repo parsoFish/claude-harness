@@ -57,6 +57,42 @@ export function costByPhase(events: EventRecord[]): Map<string, number> {
 }
 
 /**
+ * Metadata extracted from the cycle's terminal event.
+ */
+export interface CycleMeta {
+  verdict: string;
+  outcome: string;
+}
+
+/**
+ * Extracts verdict and outcome metadata from the cycle's terminal event.
+ *
+ * Searches for the event where `event === 'cycle.complete'` or
+ * `phase === 'cycle.end'`, and reads its `verdict` and `outcome` fields.
+ * Both fields default to `"(unknown)"` when absent.
+ *
+ * @param events - Array of EventRecord objects (typically from readEvents).
+ * @returns CycleMeta object with verdict and outcome strings.
+ */
+export function extractCycleMeta(events: EventRecord[]): CycleMeta {
+  const terminalEvent = events.find(
+    (evt) => evt.event === 'cycle.complete' || evt.phase === 'cycle.end',
+  );
+
+  const verdict =
+    terminalEvent !== undefined && typeof terminalEvent['verdict'] === 'string'
+      ? terminalEvent['verdict']
+      : '(unknown)';
+
+  const outcome =
+    terminalEvent !== undefined && typeof terminalEvent['outcome'] === 'string'
+      ? terminalEvent['outcome']
+      : '(unknown)';
+
+  return { verdict, outcome };
+}
+
+/**
  * Groups an array of EventRecord objects into a Map keyed by phase name.
  * Within each phase the events appear in their original insertion order.
  *
