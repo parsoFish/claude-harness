@@ -1,4 +1,5 @@
 import { execSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
 
 /**
  * Represents a single git commit.
@@ -60,6 +61,66 @@ export function getFilesTouched(
   return stdout
     .split('\n')
     .filter((line) => line.trim().length > 0);
+}
+
+/**
+ * Reads a JSON file containing an array of commit objects and returns them
+ * in normalised `{sha, subject}` shape. The `sha` field is always truncated
+ * to 7 characters (standard short-SHA display).
+ *
+ * The input JSON may use either `sha`/`subject` or `hash`/`message` field
+ * names; both are normalised to `{sha, subject}`.
+ *
+ * @param jsonPath - Path to the JSON file on disk.
+ * @returns An array of `{sha: string; subject: string}` objects.
+ * @throws If the file does not exist, is not valid JSON, or the array
+ *         items do not have the expected shape.
+ */
+export function getCommits(jsonPath: string): { sha: string; subject: string }[] {
+  let raw: string;
+  try {
+    raw = readFileSync(jsonPath, 'utf8');
+  } catch (err) {
+    throw new Error(`getCommits: could not read file "${jsonPath}": ${(err as Error).message}`);
+  }
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch (err) {
+    throw new Error(`getCommits: invalid JSON in "${jsonPath}": ${(err as Error).message}`);
+  }
+
+  if (!Array.isArray(parsed)) {
+    throw new TypeError('getCommits: expected a JSON array');
+  }
+
+  return parsed.map((item: unknown, index: number) => {
+    if (typeof item !== 'object' || item === null) {
+      throw new TypeError(`getCommits: item at index ${index} is not an object`);
+    }
+    const record = item as Record<string, unknown>;
+
+    // Support both sha/subject and hash/message field names
+    const rawSha = record['sha'] ?? record['hash'];
+    const rawSubject = record['subject'] ?? record['message'];
+
+    if (typeof rawSha !== 'string' || rawSha.length === 0) {
+      throw new TypeError(
+        `getCommits: item at index ${index} must have a non-empty "sha" or "hash" string field`,
+      );
+    }
+    if (typeof rawSubject !== 'string') {
+      throw new TypeError(
+        `getCommits: item at index ${index} must have a "subject" or "message" string field`,
+      );
+    }
+
+    return {
+      sha: rawSha.slice(0, 7),
+      subject: rawSubject,
+    };
+  });
 }
 
 /**
