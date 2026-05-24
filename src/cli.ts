@@ -44,6 +44,29 @@ for (let i = 3; i < process.argv.length; i++) {
   }
 }
 
+// Parse --format flag from argv: supports "--format <value>" or "--format=<value>"
+// Valid values: 'json' | 'markdown' (default: 'markdown')
+let formatValue: 'json' | 'markdown' = 'markdown';
+for (let i = 3; i < process.argv.length; i++) {
+  const arg = process.argv[i];
+  let raw: string | undefined;
+  if (arg === '--format' && i + 1 < process.argv.length) {
+    raw = process.argv[i + 1];
+  } else if (arg.startsWith('--format=')) {
+    raw = arg.slice('--format='.length);
+  }
+  if (raw !== undefined) {
+    if (raw !== 'json' && raw !== 'markdown') {
+      process.stderr.write(
+        `Error: --format must be "json" or "markdown"; got "${raw}"\n`,
+      );
+      process.exit(1);
+    }
+    formatValue = raw as 'json' | 'markdown';
+    break;
+  }
+}
+
 // Resolve the _logs directory relative to cwd
 const logsDir = resolve(process.cwd(), '_logs');
 
@@ -145,38 +168,69 @@ for (const dir of selectedCycleDirs) {
 
 // ── Render ────────────────────────────────────────────────────────────────────
 
-// Assemble the full trail markdown
-let trailContent = '';
-trailContent += renderTitle(initiativeId);
-
-// Emit '## Cycles included' section when --since is used (multi-cycle mode)
-if (sinceValue !== undefined) {
-  trailContent += renderCyclesIncludedSection(selectedCycleNames);
-}
-
-trailContent += renderSummarySection(initiativeId, verdict, costUsd);
-trailContent += renderPhasesSection(phaseMap);
-trailContent += renderCostSection(costMap);
-trailContent += renderGitActivity(commits, filesTouched);
 const prMeta = readPrMetadata(process.cwd());
-trailContent += renderPrSection(prMeta);
-trailContent += renderThemesSection(themes);
 
-if (outValue !== undefined) {
-  // --out mode: write to file, print confirmation to stdout
-  const outPath = resolve(outValue);
-  try {
-    await writeFile(outPath, trailContent);
-  } catch (cause) {
-    process.stderr.write(
-      `Error: cannot write trail to "${outPath}": ${(cause as Error).message}\n`,
-    );
-    process.exit(1);
+if (formatValue === 'json') {
+  // ── JSON output branch ─────────────────────────────────────────────────────
+  // Build phases array: [{ phase: string, events: EventRecord[] }, ...]
+  const phasesArray = Array.from(phaseMap.entries()).map(([phase, events]) => ({
+    phase,
+    events,
+  }));
+
+  // Build costByPhase object: { <phase>: <cost> }
+  const costByPhaseObj: Record<string, number> = {};
+  for (const [phase, cost] of costMap.entries()) {
+    costByPhaseObj[phase] = cost;
   }
-  process.stdout.write(`wrote trail to ${outPath}\n`);
+
+  const jsonOutput = {
+    initiativeId,
+    outcome: verdict,
+    verdict,
+    totalCostUsd: costUsd,
+    phases: phasesArray,
+    themes,
+    filesTouched,
+    commits,
+    pr: prMeta,
+    costByPhase: costByPhaseObj,
+  };
+
+  process.stdout.write(JSON.stringify(jsonOutput) + '\n');
 } else {
-  // Default mode: print trail to stdout
-  process.stdout.write(trailContent);
+  // ── Markdown output branch (default) ──────────────────────────────────────
+  let trailContent = '';
+  trailContent += renderTitle(initiativeId);
+
+  // Emit '## Cycles included' section when --since is used (multi-cycle mode)
+  if (sinceValue !== undefined) {
+    trailContent += renderCyclesIncludedSection(selectedCycleNames);
+  }
+
+  trailContent += renderSummarySection(initiativeId, verdict, costUsd);
+  trailContent += renderPhasesSection(phaseMap);
+  trailContent += renderCostSection(costMap);
+  trailContent += renderGitActivity(commits, filesTouched);
+  trailContent += renderPrSection(prMeta);
+  trailContent += renderThemesSection(themes);
+
+  if (outValue !== undefined) {
+    // --out mode: write to file, print confirmation to stdout
+    const outPath = resolve(outValue);
+    try {
+      await writeFile(outPath, trailContent);
+    } catch (cause) {
+      process.stderr.write(
+        `Error: cannot write trail to "${outPath}": ${(cause as Error).message}\n`,
+      );
+      process.exit(1);
+    }
+    process.stdout.write(`wrote trail to ${outPath}\n`);
+  } else {
+    // Default mode: print trail to stdout
+    process.stdout.write(trailContent);
+  }
 }
 
 /**
