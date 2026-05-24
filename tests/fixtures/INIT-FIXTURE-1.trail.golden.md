@@ -1,7 +1,11 @@
 # Trail — INIT-FIXTURE-1
 ## Summary
 
-Initiative **INIT-FIXTURE-1** completed with verdict: **complete**. Total cost: $0.24.
+Initiative **INIT-FIXTURE-1** completed with verdict: **approve**. Total cost: $0.24.
+
+Verdict: approve
+Outcome: merged
+
 ## Phases
 
 ### architect
