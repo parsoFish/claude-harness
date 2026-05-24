@@ -34,6 +34,14 @@ Initiative **INIT-FIXTURE-1** completed with verdict: **complete**. Total cost: 
 ## Themes consulted
 
 - `{CYCLE_DIR}/brain/forge/themes/example-theme.md` — Example theme demonstrating scaffold patterns for INIT-FIXTURE-1
-## Files touched
+## Git activity
+
+### Commits
+
+- abc1234 feat: add renderGitActivity to trail.ts
+- def5678 fix: wire cli.ts to use renderGitActivity
+- ghi9012 test: add integration test for git activity section
+
+### Files touched
 
 _(none)_
