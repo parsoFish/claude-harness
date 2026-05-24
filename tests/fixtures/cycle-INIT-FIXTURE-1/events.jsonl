@@ -1,0 +1,10 @@
+{"phase":"architect","event":"cycle.start","timestamp":"2026-05-24T09:00:00Z","worktree_path":"/tmp/fixture-worktree","initiative_id":"INIT-FIXTURE-1"}
+{"phase":"architect","event":"plan.created","timestamp":"2026-05-24T09:05:00Z"}
+{"phase":"architect","event":"work-items.created","timestamp":"2026-05-24T09:10:00Z","count":3}
+{"phase":"project-manager","event":"wi.assigned","timestamp":"2026-05-24T09:15:00Z","work_item_id":"WI-1"}
+{"phase":"project-manager","event":"wi.assigned","timestamp":"2026-05-24T09:16:00Z","work_item_id":"WI-2"}
+{"phase":"developer","event":"wi.started","timestamp":"2026-05-24T09:20:00Z","work_item_id":"WI-1"}
+{"phase":"developer","event":"wi.committed","timestamp":"2026-05-24T09:35:00Z","work_item_id":"WI-1","cost_usd":0.05}
+{"phase":"developer","event":"wi.started","timestamp":"2026-05-24T09:40:00Z","work_item_id":"WI-2"}
+{"phase":"developer","event":"wi.committed","timestamp":"2026-05-24T09:55:00Z","work_item_id":"WI-2","cost_usd":0.07}
+{"phase":"cycle.end","event":"cycle.complete","timestamp":"2026-05-24T10:00:00Z","verdict":"complete","cost_usd":0.12}
