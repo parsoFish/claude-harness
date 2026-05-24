@@ -35,6 +35,7 @@ export function renderSummarySection(
     `Verdict: ${verdict}`,
     `Outcome: ${outcome}`,
     '',
+    '',
   ].join('\n');
 }
 
