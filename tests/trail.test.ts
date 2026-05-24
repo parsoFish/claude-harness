@@ -19,6 +19,7 @@ const FIXTURES_DIR = resolve(__dirname, 'fixtures');
 const CYCLE_FIXTURE = join(FIXTURES_DIR, 'cycle-INIT-FIXTURE-1');
 const GOLDEN_FILE = join(FIXTURES_DIR, 'INIT-FIXTURE-1.trail.golden.md');
 const CLI_PATH = resolve(__dirname, '..', 'src', 'cli.ts');
+const PR_METADATA_FIXTURE = join(CYCLE_FIXTURE, '.forge', '_pr-metadata.json');
 
 /**
  * Recursively copies a directory tree from src to dst.
@@ -43,6 +44,11 @@ describe('trail integration — INIT-FIXTURE-1', () => {
     const tmpBase = mkdtempSync(join(tmpdir(), 'trail-test-'));
     const cycleTarget = join(tmpBase, '_logs', 'cycle-INIT-FIXTURE-1');
     copyDirRecursive(CYCLE_FIXTURE, cycleTarget);
+
+    // Place _pr-metadata.json at <tmpBase>/.forge/_pr-metadata.json so that
+    // readPrMetadata(cwd) finds it (cwd = tmpBase when the CLI is spawned).
+    mkdirSync(join(tmpBase, '.forge'), { recursive: true });
+    copyFileSync(PR_METADATA_FIXTURE, join(tmpBase, '.forge', '_pr-metadata.json'));
 
     const result = spawnSync(
       process.execPath,
