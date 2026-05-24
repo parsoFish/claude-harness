@@ -25,6 +25,12 @@ Initiative **INIT-FIXTURE-1** completed with verdict: **complete**. Total cost: 
 ### cycle.end
 
 - cycle.complete (2026-05-24T10:00:00Z)
+## Cost rollup
+
+- **developer**: $0.12
+- **cycle.end**: $0.12
+
+**Total**: $0.24
 ## Themes consulted
 
 - `{CYCLE_DIR}/brain/forge/themes/example-theme.md` — Example theme demonstrating scaffold patterns for INIT-FIXTURE-1
