@@ -9,9 +9,23 @@ const initiativeId = process.argv[2];
 
 if (!initiativeId) {
   process.stderr.write(
-    'Usage: node --experimental-strip-types src/cli.ts <initiative-id>\n',
+    'Usage: node --experimental-strip-types src/cli.ts <initiative-id> [--since <cycle-id>]\n',
   );
   process.exit(1);
+}
+
+// Parse --since flag from argv: supports "--since <value>" or "--since=<value>"
+let sinceValue: string | undefined;
+for (let i = 3; i < process.argv.length; i++) {
+  const arg = process.argv[i];
+  if (arg === '--since' && i + 1 < process.argv.length) {
+    sinceValue = process.argv[i + 1];
+    break;
+  }
+  if (arg.startsWith('--since=')) {
+    sinceValue = arg.slice('--since='.length);
+    break;
+  }
 }
 
 // Resolve the _logs directory relative to cwd
@@ -24,16 +38,17 @@ if (!existsSync(logsDir)) {
   process.exit(1);
 }
 
-// Walk _logs for a sub-directory whose name contains the initiativeId
-let cycleDir: string | undefined;
+// Walk _logs for sub-directories whose name contains the initiativeId
+let allCycleDirs: string[] = [];
 try {
   const entries = readdirSync(logsDir, { withFileTypes: true });
   for (const entry of entries) {
     if (entry.isDirectory() && entry.name.includes(initiativeId)) {
-      cycleDir = join(logsDir, entry.name);
-      break;
+      allCycleDirs.push(entry.name);
     }
   }
+  // Sort ascending (lexicographic timestamp prefix ensures chronological order)
+  allCycleDirs.sort();
 } catch (cause) {
   process.stderr.write(
     `Error: cannot read _logs directory "${logsDir}": ${(cause as Error).message}\n`,
@@ -41,34 +56,52 @@ try {
   process.exit(1);
 }
 
-if (!cycleDir) {
+// Determine the set of cycle directories to process
+let selectedCycleNames: string[];
+if (sinceValue !== undefined) {
+  // --since mode: include all cycles with name >= sinceValue
+  selectedCycleNames = allCycleDirs.filter((name) => name >= sinceValue!);
+} else {
+  // Legacy single-cycle mode: pick the first matching cycle dir (original behaviour)
+  const first = allCycleDirs[0];
+  selectedCycleNames = first !== undefined ? [first] : [];
+}
+
+if (selectedCycleNames.length === 0) {
   process.stderr.write(
-    `Error: no cycle directory found in "${logsDir}" for initiative "${initiativeId}"\n`,
+    `Error: no cycle directory found in "${logsDir}" for initiative "${initiativeId}"` +
+      (sinceValue !== undefined ? ` with --since "${sinceValue}"` : '') +
+      '\n',
   );
   process.exit(1);
 }
 
-const eventsPath = join(cycleDir, 'events.jsonl');
-const events = readEvents(eventsPath);
-const phaseMap = rollupByPhase(events);
-const costMap = costByPhase(events);
+// Resolve to full paths
+const selectedCycleDirs = selectedCycleNames.map((name) => join(logsDir, name));
 
-// Derive verdict and cost from events (best-effort: look for a summary event or use defaults)
+// Aggregate events from all selected cycle dirs
+const allEvents = selectedCycleDirs.flatMap((dir) =>
+  readEvents(join(dir, 'events.jsonl')),
+);
+
+const phaseMap = rollupByPhase(allEvents);
+const costMap = costByPhase(allEvents);
+
+// Derive verdict and cost from aggregated events
 let verdict = 'unknown';
 let costUsd = 0;
-for (const evt of events) {
+for (const evt of allEvents) {
   if (typeof evt['verdict'] === 'string') verdict = evt['verdict'];
   if (typeof evt['cost_usd'] === 'number') costUsd += evt['cost_usd'];
 }
 
-// Brain themes: look for a brain/ dir inside the cycle directory
-const brainDir = join(cycleDir, 'brain');
+// Brain themes: look for a brain/ dir inside the FIRST selected cycle directory
+const brainDir = join(selectedCycleDirs[0]!, 'brain');
 const themes = findThemesForInitiative(brainDir, initiativeId);
 
 // Files touched: gracefully return empty list if git is unavailable
-// (e.g. in fixture tempdir that is not a real git repo)
 let filesTouched: string[] = [];
-const worktreePathEvent = events.find(
+const worktreePathEvent = allEvents.find(
   (evt) => typeof evt['worktree_path'] === 'string',
 );
 if (worktreePathEvent) {
@@ -81,20 +114,43 @@ if (worktreePathEvent) {
   }
 }
 
-// Commits: read from commits.json in the cycle directory if present
+// Commits: aggregate from commits.json across all selected cycle dirs
 let commits: { sha: string; subject: string }[] = [];
-const commitsJsonPath = join(cycleDir, 'commits.json');
-if (existsSync(commitsJsonPath)) {
-  try {
-    commits = getCommits(commitsJsonPath);
-  } catch {
-    // malformed commits.json — leave commits empty
+for (const dir of selectedCycleDirs) {
+  const commitsJsonPath = join(dir, 'commits.json');
+  if (existsSync(commitsJsonPath)) {
+    try {
+      commits = commits.concat(getCommits(commitsJsonPath));
+    } catch {
+      // malformed commits.json — skip this cycle's commits
+    }
   }
 }
 
+// ── Render ────────────────────────────────────────────────────────────────────
+
 process.stdout.write(renderTitle(initiativeId));
+
+// Emit '## Cycles included' section when --since is used (multi-cycle mode)
+if (sinceValue !== undefined) {
+  process.stdout.write(renderCyclesIncludedSection(selectedCycleNames));
+}
+
 process.stdout.write(renderSummarySection(initiativeId, verdict, costUsd));
 process.stdout.write(renderPhasesSection(phaseMap));
 process.stdout.write(renderCostSection(costMap));
 process.stdout.write(renderThemesSection(themes));
 process.stdout.write(renderGitActivity(commits, filesTouched));
+
+/**
+ * Renders a '## Cycles included' section listing each matched cycle ID.
+ * Only emitted when --since is present.
+ */
+function renderCyclesIncludedSection(cycleNames: string[]): string {
+  const lines: string[] = ['## Cycles included\n\n'];
+  for (const name of cycleNames) {
+    lines.push(`- ${name}\n`);
+  }
+  lines.push('\n');
+  return lines.join('');
+}
