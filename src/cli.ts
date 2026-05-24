@@ -157,8 +157,10 @@ if (sinceValue !== undefined) {
 trailContent += renderSummarySection(initiativeId, verdict, costUsd);
 trailContent += renderPhasesSection(phaseMap);
 trailContent += renderCostSection(costMap);
-trailContent += renderThemesSection(themes);
 trailContent += renderGitActivity(commits, filesTouched);
+const prMeta = readPrMetadata(process.cwd());
+trailContent += renderPrSection(prMeta);
+trailContent += renderThemesSection(themes);
 
 if (outValue !== undefined) {
   // --out mode: write to file, print confirmation to stdout
