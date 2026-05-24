@@ -1,20 +1,27 @@
-# Unifier Agent Memory — INIT-2026-05-25-claude-trail-out-flag
+# Agent Memory — WI-1
 
-> Institutional memory across unifier-Ralph iterations. Read at the start of every iteration; updated at the end.
+> Institutional memory for this work item across Ralph iterations. Read at the start of every iteration; updated at the end.
 
-## What I tried
+## Brain context (loaded at iteration 1)
 
-### Iteration 1 (initial prep)
+_(no brain context seeded — read theme files yourself if needed; the system prompt has the navigation index.)_
 
-- Read AGENT.md, fix_plan.md, initiative manifest, and WI-1 spec.
-- Inspected the committed diff: `src/cli.ts` (+48 lines) and `tests/out-flag.test.ts` (+206 lines) — both files named in WI-1's `files_in_scope`.
-- Ran `npm test`: **60 tests, 0 failures**. All four new AC suites in `out-flag.test.ts` pass (AC1 file-write, AC2 confirmation-only stdout, AC3 backward-compat regression, AC4 bad-path non-zero exit).
-- Ticked all four ACs in `fix_plan.md`.
-- Created `demo/INIT-2026-05-25-claude-trail-out-flag/DEMO.md` (shape: none — infra-only CLI change). Rationale block explains grep targets and test commands a reviewer can run independently.
-- Wrote `.forge/pr-description.md` (≥ 300 chars, all four required sections including `## Demo` with relative link).
-- Committed as `feat(INIT-2026-05-25-claude-trail-out-flag): unify and demo` and pushed.
+## What I've tried
+
+_(updated by each iteration — most recent at the top)_
+
+## What worked
+
+_(append patterns/approaches that produced progress)_
+
+## What didn't work
+
+_(append dead-ends so future iterations don't re-tread them)_
+
+## Open questions
+
+_(things that aren't blocking but would be useful to clarify; reflector picks these up)_
 
 ## Notes for reflection
 
-- The per-WI dev-loop used the "forge-autocommit" safety-net commit label, meaning the WI Ralph's own commit was not explicitly authored — the autocommit caught it. No functional impact; the code and tests were correct on first inspection.
-- WI-1 is a clean ONE-WI initiative; no cross-WI coordination concerns.
+_(observations the reflector should capture into the brain; the agent doesn't write them itself, but flags here)_

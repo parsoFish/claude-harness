@@ -1,8 +1,7 @@
-# Fix Plan — unifier sub-phase
+# Fix Plan
 
-> Initiative-level acceptance criteria. Tick each as you prove it against branch tip. Iteration 1 is initial prep; iterations 2+ react to either gate failures or send-back feedback.
+> Checklist for WI-1. Tick items as you complete them; add items as you discover sub-problems. The orchestrator uses this list (count of unchecked items) to detect when the loop is wedged.
 
-- [x] AC1 (WI-1): GIVEN a CLI invocation with '--out /tmp/trail.md' and a valid initiative + _logs fixture WHEN the command runs successfully THEN the file at /tmp/trail.md is written with the full trail markdown content
-- [x] AC2 (WI-1): GIVEN a CLI invocation with '--out /tmp/trail.md' and a valid initiative + _logs fixture WHEN the command runs successfully THEN stdout contains exactly the line 'wrote trail to /tmp/trail.md' and nothing else
-- [x] AC3 (WI-1): GIVEN a CLI invocation WITHOUT '--out' and a valid initiative + _logs fixture WHEN the command runs successfully THEN stdout contains the full trail markdown (regression: existing behaviour unchanged)
-- [x] AC4 (WI-1): GIVEN a CLI invocation with '--out /nonexistent-dir/trail.md' where the parent directory does not exist WHEN the command attempts to write the file THEN the process exits with a non-zero exit code and stderr contains an error message
+- [ ] AC1: GIVEN tests/fixtures/cycle-INIT-FIXTURE-1/.forge/_pr-metadata.json exists with url, title, state fields WHEN the CLI is invoked against the fixture THEN stdout contains a '## PR' section positioned between '## Git activity' and '## Themes consulted'
+- [ ] AC2: GIVEN tests/fixtures/cycle-INIT-FIXTURE-1/.forge/_pr-metadata.json exists WHEN the CLI is invoked against the fixture THEN stdout matches the updated INIT-FIXTURE-1.trail.golden.md byte-for-byte (after path normalisation)
+- [ ] AC3: GIVEN no .forge/_pr-metadata.json exists in cwd WHEN the CLI is invoked THEN the '## PR' section is absent from stdout and no error is emitted

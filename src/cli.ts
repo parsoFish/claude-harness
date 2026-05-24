@@ -2,8 +2,9 @@ import { existsSync, readdirSync } from 'node:fs';
 import { writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { readEvents, rollupByPhase, costByPhase } from './events.ts';
-import { renderTitle, renderSummarySection, renderPhasesSection, renderCostSection, renderGitActivity } from './trail.ts';
+import { renderTitle, renderSummarySection, renderPhasesSection, renderCostSection, renderGitActivity, renderPrSection } from './trail.ts';
 import { findThemesForInitiative, renderThemesSection } from './brain.ts';
+import { readPrMetadata } from './pr.ts';
 import { getCommits } from './git.ts';
 
 const initiativeId = process.argv[2];

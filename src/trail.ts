@@ -81,6 +81,29 @@ export function renderPhasesSection(phaseMap: Map<string, EventRecord[]>): strin
 }
 
 /**
+ * Renders the PR metadata section of a trail document.
+ *
+ * @param meta - PR metadata object with `url`, `title`, and `state` fields,
+ *               or `null` when no PR metadata is available.
+ * @returns A markdown string containing a '## PR' heading with the PR details,
+ *          or an empty string when `meta` is `null` (section is silently skipped).
+ */
+export function renderPrSection(
+  meta: { url: string; title: string; state: string } | null,
+): string {
+  if (meta === null) return '';
+
+  return [
+    '## PR',
+    '',
+    `**Title**: ${meta.title}`,
+    `**URL**: ${meta.url}`,
+    `**State**: ${meta.state}`,
+    '',
+  ].join('\n');
+}
+
+/**
  * Renders the combined Git activity section of a trail document.
  *
  * Contains two sub-blocks:
