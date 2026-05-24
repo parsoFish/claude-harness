@@ -1,0 +1,5 @@
+[
+  {"sha": "abc1234", "subject": "feat: add renderGitActivity to trail.ts"},
+  {"sha": "def5678", "subject": "fix: wire cli.ts to use renderGitActivity"},
+  {"sha": "ghi9012", "subject": "test: add integration test for git activity section"}
+]
