@@ -1,4 +1,5 @@
 import { existsSync, readdirSync } from 'node:fs';
+import { writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { readEvents, rollupByPhase, costByPhase } from './events.ts';
 import { renderTitle, renderSummarySection, renderPhasesSection, renderCostSection, renderGitActivity } from './trail.ts';
@@ -24,6 +25,20 @@ for (let i = 3; i < process.argv.length; i++) {
   }
   if (arg.startsWith('--since=')) {
     sinceValue = arg.slice('--since='.length);
+    break;
+  }
+}
+
+// Parse --out flag from argv: supports "--out <value>" or "--out=<value>"
+let outValue: string | undefined;
+for (let i = 3; i < process.argv.length; i++) {
+  const arg = process.argv[i];
+  if (arg === '--out' && i + 1 < process.argv.length) {
+    outValue = process.argv[i + 1];
+    break;
+  }
+  if (arg.startsWith('--out=')) {
+    outValue = arg.slice('--out='.length);
     break;
   }
 }
@@ -129,18 +144,37 @@ for (const dir of selectedCycleDirs) {
 
 // ── Render ────────────────────────────────────────────────────────────────────
 
-process.stdout.write(renderTitle(initiativeId));
+// Assemble the full trail markdown
+let trailContent = '';
+trailContent += renderTitle(initiativeId);
 
 // Emit '## Cycles included' section when --since is used (multi-cycle mode)
 if (sinceValue !== undefined) {
-  process.stdout.write(renderCyclesIncludedSection(selectedCycleNames));
+  trailContent += renderCyclesIncludedSection(selectedCycleNames);
 }
 
-process.stdout.write(renderSummarySection(initiativeId, verdict, costUsd));
-process.stdout.write(renderPhasesSection(phaseMap));
-process.stdout.write(renderCostSection(costMap));
-process.stdout.write(renderThemesSection(themes));
-process.stdout.write(renderGitActivity(commits, filesTouched));
+trailContent += renderSummarySection(initiativeId, verdict, costUsd);
+trailContent += renderPhasesSection(phaseMap);
+trailContent += renderCostSection(costMap);
+trailContent += renderThemesSection(themes);
+trailContent += renderGitActivity(commits, filesTouched);
+
+if (outValue !== undefined) {
+  // --out mode: write to file, print confirmation to stdout
+  const outPath = resolve(outValue);
+  try {
+    await writeFile(outPath, trailContent);
+  } catch (cause) {
+    process.stderr.write(
+      `Error: cannot write trail to "${outPath}": ${(cause as Error).message}\n`,
+    );
+    process.exit(1);
+  }
+  process.stdout.write(`wrote trail to ${outPath}\n`);
+} else {
+  // Default mode: print trail to stdout
+  process.stdout.write(trailContent);
+}
 
 /**
  * Renders a '## Cycles included' section listing each matched cycle ID.
