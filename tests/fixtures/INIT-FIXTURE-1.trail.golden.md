@@ -31,9 +31,6 @@ Initiative **INIT-FIXTURE-1** completed with verdict: **complete**. Total cost: 
 - **cycle.end**: $0.12
 
 **Total**: $0.24
-## Themes consulted
-
-- `{CYCLE_DIR}/brain/forge/themes/example-theme.md` — Example theme demonstrating scaffold patterns for INIT-FIXTURE-1
 ## Git activity
 
 ### Commits
@@ -45,3 +42,11 @@ Initiative **INIT-FIXTURE-1** completed with verdict: **complete**. Total cost: 
 ### Files touched
 
 _(none)_
+## PR
+
+**Title**: feat: add renderGitActivity to trail.ts
+**URL**: https://github.com/example/repo/pull/42
+**State**: merged
+## Themes consulted
+
+- `{CYCLE_DIR}/brain/forge/themes/example-theme.md` — Example theme demonstrating scaffold patterns for INIT-FIXTURE-1
