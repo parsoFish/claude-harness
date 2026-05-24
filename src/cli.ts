@@ -1,9 +1,9 @@
 import { existsSync, readdirSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { readEvents, rollupByPhase, costByPhase } from './events.ts';
-import { renderTitle, renderSummarySection, renderPhasesSection, renderCostSection } from './trail.ts';
+import { renderTitle, renderSummarySection, renderPhasesSection, renderCostSection, renderGitActivity } from './trail.ts';
 import { findThemesForInitiative, renderThemesSection } from './brain.ts';
-import { renderFilesTouchedSection } from './git.ts';
+import { getCommits } from './git.ts';
 
 const initiativeId = process.argv[2];
 
@@ -81,9 +81,20 @@ if (worktreePathEvent) {
   }
 }
 
+// Commits: read from commits.json in the cycle directory if present
+let commits: { sha: string; subject: string }[] = [];
+const commitsJsonPath = join(cycleDir, 'commits.json');
+if (existsSync(commitsJsonPath)) {
+  try {
+    commits = getCommits(commitsJsonPath);
+  } catch {
+    // malformed commits.json — leave commits empty
+  }
+}
+
 process.stdout.write(renderTitle(initiativeId));
 process.stdout.write(renderSummarySection(initiativeId, verdict, costUsd));
 process.stdout.write(renderPhasesSection(phaseMap));
 process.stdout.write(renderCostSection(costMap));
 process.stdout.write(renderThemesSection(themes));
-process.stdout.write(renderFilesTouchedSection(filesTouched));
+process.stdout.write(renderGitActivity(commits, filesTouched));
