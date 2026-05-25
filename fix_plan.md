@@ -1,7 +1,7 @@
 # Fix Plan
 
-> Checklist for WI-2. Tick items as you complete them; add items as you discover sub-problems. The orchestrator uses this list (count of unchecked items) to detect when the loop is wedged.
+> Checklist for WI-3. Tick items as you complete them; add items as you discover sub-problems. The orchestrator uses this list (count of unchecked items) to detect when the loop is wedged.
 
-- [ ] AC1: GIVEN a ProbeResult object with initiativeId='INIT-abc', totalEvents=47, phaseCount=6, dominantPhase='developer-loop', dominantCount=22 WHEN formatProbeSummary() is called with that object THEN it returns exactly the string 'INIT-abc: 47 events, 6 phases, dominant=developer-loop (22 events)'
-- [ ] AC2: GIVEN a ProbeResult where dominantPhase is an empty string and dominantCount is 0 WHEN formatProbeSummary() is called THEN it returns a string matching '<initiativeId>: <N> events, 0 phases, dominant= (0 events)' without throwing
-- [ ] AC3: GIVEN a ProbeResult with totalEvents=1, phaseCount=1, dominantCount=1 WHEN formatProbeSummary() is called THEN it returns a string with singular counts rendered correctly (no plural vs singular branching required — the format spec uses bare numbers)
+- [ ] AC1: GIVEN a cycle log directory containing a valid events.jsonl with known content WHEN claude-trail probe <cycle-dir> is invoked via node --experimental-strip-types src/cli.ts probe <cycle-dir> THEN stdout contains exactly one line matching '<initiative-id>: <N> events, <M> phases, dominant=<phase> (<K> events)' and the process exits 0
+- [ ] AC2: GIVEN a path that does not exist is passed as the cycle-dir argument WHEN claude-trail probe <nonexistent-path> is invoked THEN the process exits non-zero and prints an error to stderr
+- [ ] AC3: GIVEN the existing test suite (baseline.test.ts, events.test.ts, cli.test.ts, trail.test.ts, etc.) is run WHEN npm test is executed after this WI is merged THEN all pre-existing tests continue to pass (no regressions from cli.ts modification)

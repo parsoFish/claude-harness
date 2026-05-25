@@ -6,6 +6,44 @@ import { renderTitle, renderSummarySection, renderPhasesSection, renderCostSecti
 import { findThemesForInitiative, renderThemesSection } from './brain.ts';
 import { readPrMetadata } from './pr.ts';
 import { getCommits } from './git.ts';
+import { probeCore, formatProbeSummary } from './probe.ts';
+
+// ── probe subcommand ─────────────────────────────────────────────────────────
+
+if (process.argv[2] === 'probe') {
+  const cycleDir = process.argv[3];
+
+  if (!cycleDir) {
+    process.stderr.write(
+      'Usage: node --experimental-strip-types src/cli.ts probe <cycle-dir>\n',
+    );
+    process.exit(1);
+  }
+
+  const resolvedCycleDir = resolve(process.cwd(), cycleDir);
+
+  if (!existsSync(resolvedCycleDir)) {
+    process.stderr.write(
+      `Error: cycle directory not found: "${resolvedCycleDir}"\n`,
+    );
+    process.exit(1);
+  }
+
+  const eventsFile = join(resolvedCycleDir, 'events.jsonl');
+
+  if (!existsSync(eventsFile)) {
+    process.stderr.write(
+      `Error: events.jsonl not found in "${resolvedCycleDir}"\n`,
+    );
+    process.exit(1);
+  }
+
+  const result = probeCore(eventsFile);
+  process.stdout.write(formatProbeSummary(result) + '\n');
+  process.exit(0);
+}
+
+// ── trail subcommand (existing behaviour) ────────────────────────────────────
 
 const initiativeId = process.argv[2];
 
