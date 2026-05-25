@@ -350,6 +350,50 @@ if (formatValue === 'json') {
 }
 
 /**
+ * Formats a single cycle's events as a one-line summary string.
+ *
+ * Format: `<cycle-name>: <N> events, <M> phases, dominant=<phase> (<k> events) [status=<s>]`
+ *
+ * - N = total events
+ * - M = distinct phase names
+ * - dominant phase = phase with the most events (insertion order wins on tie)
+ * - status = value of the `status` field from the first event that carries one,
+ *   or `"(unknown)"` when no event has a status field.
+ */
+function formatCycleSummary(cycle: CycleEvents): string {
+  const { name, events } = cycle;
+
+  const totalEvents = events.length;
+
+  // Group by phase to find phase count and dominant phase
+  const phaseCounts = new Map<string, number>();
+  for (const evt of events) {
+    phaseCounts.set(evt.phase, (phaseCounts.get(evt.phase) ?? 0) + 1);
+  }
+  const phaseCount = phaseCounts.size;
+
+  let dominantPhase = '';
+  let dominantCount = 0;
+  for (const [phase, count] of phaseCounts) {
+    if (count > dominantCount) {
+      dominantCount = count;
+      dominantPhase = phase;
+    }
+  }
+
+  // Find first event with a status field
+  let status = '(unknown)';
+  for (const evt of events) {
+    if (typeof evt['status'] === 'string' && evt['status'] !== '') {
+      status = evt['status'];
+      break;
+    }
+  }
+
+  return `${name}: ${totalEvents} events, ${phaseCount} phases, dominant=${dominantPhase} (${dominantCount} events) [status=${status}]`;
+}
+
+/**
  * Renders a '## Cycles included' section listing each matched cycle ID.
  * Only emitted when --since is present.
  */
