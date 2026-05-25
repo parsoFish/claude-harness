@@ -1,4 +1,4 @@
-import { existsSync, readdirSync } from 'node:fs';
+import { existsSync, readdirSync, statSync } from 'node:fs';
 import { writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { readEvents, rollupByPhase, costByPhase, extractCycleMeta } from './events.ts';
@@ -7,6 +7,9 @@ import { findThemesForInitiative, renderThemesSection } from './brain.ts';
 import { readPrMetadata } from './pr.ts';
 import { getCommits } from './git.ts';
 import { probeCore, formatProbeSummary } from './probe.ts';
+import { parseFilters } from './filter.ts';
+import { filterCycles } from './filter-renderer.ts';
+import type { CycleEvents } from './filter-renderer.ts';
 
 // ── probe subcommand ─────────────────────────────────────────────────────────
 
@@ -41,6 +44,80 @@ if (process.argv[2] === 'probe') {
   const result = probeCore(eventsFile);
   process.stdout.write(formatProbeSummary(result) + '\n');
   process.exit(0);
+}
+
+// ── filter subcommand (cycles-dir mode) ──────────────────────────────────────
+// Activated when the first positional argument (after any --filter flags)
+// resolves to an existing directory on the filesystem.
+
+{
+  const argv = process.argv.slice(2);
+  // Find the first positional arg (not a --filter flag or its value)
+  let firstPositional: string | undefined;
+  for (let i = 0; i < argv.length; i++) {
+    const arg = argv[i]!;
+    if (arg === '--filter') {
+      i++; // skip next value
+    } else if (arg.startsWith('--filter=')) {
+      // no extra value to skip
+    } else if (!arg.startsWith('-')) {
+      firstPositional = arg;
+      break;
+    }
+  }
+
+  if (firstPositional !== undefined) {
+    const resolvedDir = resolve(process.cwd(), firstPositional);
+    let isDirectory = false;
+    try {
+      isDirectory = statSync(resolvedDir).isDirectory();
+    } catch {
+      // not a directory — fall through to trail subcommand
+    }
+
+    if (isDirectory) {
+      // Resolve cycle subdirectories
+      let cycleDirNames: string[];
+      try {
+        cycleDirNames = readdirSync(resolvedDir, { withFileTypes: true })
+          .filter((e) => e.isDirectory())
+          .map((e) => e.name)
+          .sort();
+      } catch (cause) {
+        process.stderr.write(
+          `Error: cannot read cycles directory "${resolvedDir}": ${(cause as Error).message}\n`,
+        );
+        process.exit(1);
+      }
+
+      // Build CycleEvents list by reading events.jsonl from each subdir
+      const allCycleEvents: CycleEvents[] = [];
+      for (const name of cycleDirNames) {
+        const eventsFile = join(resolvedDir, name, 'events.jsonl');
+        if (existsSync(eventsFile)) {
+          try {
+            const events = readEvents(eventsFile);
+            allCycleEvents.push({ name, events });
+          } catch {
+            // unreadable events.jsonl — skip this cycle
+          }
+        }
+      }
+
+      // Parse --filter flags
+      const filters = parseFilters(argv);
+
+      // Apply filters
+      const matchingCycles = filterCycles(allCycleEvents, filters);
+
+      // Print one summary line per surviving cycle
+      for (const cycle of matchingCycles) {
+        process.stdout.write(formatCycleSummary(cycle) + '\n');
+      }
+
+      process.exit(0);
+    }
+  }
 }
 
 // ── trail subcommand (existing behaviour) ────────────────────────────────────
