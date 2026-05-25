@@ -1,7 +1,7 @@
-# Fix Plan — unifier sub-phase
+# Fix Plan
 
-> Initiative-level acceptance criteria. Tick each as you prove it against branch tip. Iteration 1 is initial prep; iterations 2+ react to either gate failures or send-back feedback.
+> Checklist for WI-1. Tick items as you complete them; add items as you discover sub-problems. The orchestrator uses this list (count of unchecked items) to detect when the loop is wedged.
 
-- [x] AC1 (WI-1): GIVEN a cycle events.jsonl where cycle.end has metadata fields verdict and outcome WHEN extractCycleMeta is called with those events THEN it returns an object with verdict and outcome matching those metadata values
-- [x] AC2 (WI-1): GIVEN a cycle events.jsonl where cycle.end has no verdict or outcome fields WHEN extractCycleMeta is called with those events THEN it returns verdict: "(unknown)" and outcome: "(unknown)"
-- [x] AC3 (WI-1): GIVEN the fixture events.jsonl has verdict: "approve" and outcome: "merged" on cycle.end, and the golden summary includes Verdict and Outcome lines WHEN the CLI is spawned against the fixture THEN stdout matches the updated golden file byte-for-byte (path-normalised)
+- [ ] AC1: GIVEN an events.jsonl file with events across multiple phases WHEN probeCore() is called with the path to that file THEN it returns an object with totalEvents count, phaseCount, and dominantPhase (the phase with the most events) plus its event count
+- [ ] AC2: GIVEN an events.jsonl where two phases have equal event counts WHEN probeCore() is called THEN it returns one of the tied phases as dominantPhase without throwing
+- [ ] AC3: GIVEN an empty events.jsonl (zero records) WHEN probeCore() is called THEN it returns totalEvents=0, phaseCount=0, and dominantPhase as an empty string or null sentinel
