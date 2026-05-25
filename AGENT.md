@@ -1,4 +1,4 @@
-# Agent Memory — WI-1
+# Agent Memory — WI-2
 
 > Institutional memory for this work item across Ralph iterations. Read at the start of every iteration; updated at the end.
 

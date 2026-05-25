@@ -58,3 +58,15 @@ export function probeCore(filePath: string): ProbeResult {
 
   return { initiativeId, totalEvents, phaseCount, dominantPhase, dominantCount };
 }
+
+/**
+ * Formats a ProbeResult as a single-line health summary string.
+ *
+ * Format: `<initiativeId>: <totalEvents> events, <phaseCount> phases, dominant=<dominantPhase> (<dominantCount> events)`
+ *
+ * @param result - ProbeResult to format.
+ * @returns The formatted summary string.
+ */
+export function formatProbeSummary(result: ProbeResult): string {
+  return `${result.initiativeId}: ${result.totalEvents} events, ${result.phaseCount} phases, dominant=${result.dominantPhase} (${result.dominantCount} events)`;
+}

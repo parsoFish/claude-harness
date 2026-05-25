@@ -1,7 +1,7 @@
 # Fix Plan
 
-> Checklist for WI-1. Tick items as you complete them; add items as you discover sub-problems. The orchestrator uses this list (count of unchecked items) to detect when the loop is wedged.
+> Checklist for WI-2. Tick items as you complete them; add items as you discover sub-problems. The orchestrator uses this list (count of unchecked items) to detect when the loop is wedged.
 
-- [ ] AC1: GIVEN an events.jsonl file with events across multiple phases WHEN probeCore() is called with the path to that file THEN it returns an object with totalEvents count, phaseCount, and dominantPhase (the phase with the most events) plus its event count
-- [ ] AC2: GIVEN an events.jsonl where two phases have equal event counts WHEN probeCore() is called THEN it returns one of the tied phases as dominantPhase without throwing
-- [ ] AC3: GIVEN an empty events.jsonl (zero records) WHEN probeCore() is called THEN it returns totalEvents=0, phaseCount=0, and dominantPhase as an empty string or null sentinel
+- [ ] AC1: GIVEN a ProbeResult object with initiativeId='INIT-abc', totalEvents=47, phaseCount=6, dominantPhase='developer-loop', dominantCount=22 WHEN formatProbeSummary() is called with that object THEN it returns exactly the string 'INIT-abc: 47 events, 6 phases, dominant=developer-loop (22 events)'
+- [ ] AC2: GIVEN a ProbeResult where dominantPhase is an empty string and dominantCount is 0 WHEN formatProbeSummary() is called THEN it returns a string matching '<initiativeId>: <N> events, 0 phases, dominant= (0 events)' without throwing
+- [ ] AC3: GIVEN a ProbeResult with totalEvents=1, phaseCount=1, dominantCount=1 WHEN formatProbeSummary() is called THEN it returns a string with singular counts rendered correctly (no plural vs singular branching required — the format spec uses bare numbers)
