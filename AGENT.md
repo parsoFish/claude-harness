@@ -1,4 +1,4 @@
-# Agent Memory — WI-2
+# Agent Memory — WI-3
 
 > Institutional memory for this work item across Ralph iterations. Read at the start of every iteration; updated at the end.
 
@@ -8,28 +8,20 @@ _(no brain context seeded — read theme files yourself if needed; the system pr
 
 ## What I've tried
 
-### Iteration 1 (complete)
-
-- Created `src/filter-phase.ts` exporting `matchPhase(filter: FilterSpec, events: EventRecord[]): boolean`.
-- The implementation is a single `events.some((e) => e.phase === filter.value)` — minimal, case-sensitive.
-- Created `tests/filter-phase-matcher.test.ts` with 8 tests across 3 `describe` suites (one per AC).
-- Quality gate ran: `node --test --experimental-strip-types tests/filter-phase-matcher.test.ts` → **8 pass, 0 fail**.
-- Committed as `feat: add matchPhase phase-filter matcher and tests (WI-2)`.
+_(updated by each iteration — most recent at the top)_
 
 ## What worked
 
-- `EventRecord` from `./events.ts` already has `phase: string` at the top level — direct `event.phase === filter.value` comparison is sufficient.
-- `FilterSpec` from `./filter.ts` has `{ key: string; value: string }` — only `value` is used for the phase comparison; `key` is ignored (as per spec: "checks whether any event has `event.phase === filter.value`").
-- Import paths need the `.ts` extension (ESM + `--experimental-strip-types`): `import type { FilterSpec } from './filter.ts'`.
+_(append patterns/approaches that produced progress)_
 
 ## What didn't work
 
-_(nothing failed — first iteration delivered all 3 ACs)_
+_(append dead-ends so future iterations don't re-tread them)_
 
 ## Open questions
 
-_(none — scope was atomic and fully specified)_
+_(things that aren't blocking but would be useful to clarify; reflector picks these up)_
 
 ## Notes for reflection
 
-- The `key` field of `FilterSpec` is ignored by `matchPhase`. This is correct per spec ("does not touch status fields"), but future matchers may need to dispatch on `filter.key` to select the right matcher. Worth noting as a pattern.
+_(observations the reflector should capture into the brain; the agent doesn't write them itself, but flags here)_
