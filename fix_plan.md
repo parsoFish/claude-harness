@@ -1,8 +1,7 @@
 # Fix Plan
 
-> Checklist for WI-1. Tick items as you complete them; add items as you discover sub-problems. The orchestrator uses this list (count of unchecked items) to detect when the loop is wedged.
+> Checklist for WI-2. Tick items as you complete them; add items as you discover sub-problems. The orchestrator uses this list (count of unchecked items) to detect when the loop is wedged.
 
-- [ ] AC1: GIVEN argv contains '--filter phase:reflection' WHEN parseFilters(argv) is called THEN the returned array contains { key: 'phase', value: 'reflection' }
-- [ ] AC2: GIVEN argv contains '--filter phase:reflection' and '--filter status:done' WHEN parseFilters(argv) is called THEN the returned array contains two entries: { key: 'phase', value: 'reflection' } and { key: 'status', value: 'done' }
-- [ ] AC3: GIVEN argv contains '--filter badformat' (no colon) WHEN parseFilters(argv) is called THEN the function throws an error mentioning the malformed filter token
-- [ ] AC4: GIVEN argv contains no '--filter' flags WHEN parseFilters(argv) is called THEN the returned array is empty
+- [x] AC1: GIVEN a cycle whose events include at least one event with phase 'reflection' WHEN matchPhase({ key: 'phase', value: 'reflection' }, cycleEvents) is called THEN the function returns true
+- [x] AC2: GIVEN a cycle whose events contain no event with phase 'reflection' WHEN matchPhase({ key: 'phase', value: 'reflection' }, cycleEvents) is called THEN the function returns false
+- [x] AC3: GIVEN an empty events array WHEN matchPhase({ key: 'phase', value: 'any' }, []) is called THEN the function returns false
