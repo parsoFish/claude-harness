@@ -10,43 +10,6 @@ import { probeCore, formatProbeSummary } from './probe.ts';
 import { parseFilters } from './filter.ts';
 import { filterCycles } from './filter-renderer.ts';
 import type { CycleEvents } from './filter-renderer.ts';
-import { countEventsByPhase, formatStatsText, formatStatsJson } from './stats.ts';
-
-// ── stats subcommand ──────────────────────────────────────────────────────────
-
-if (process.argv[2] === 'stats') {
-  // Parse optional --json flag and positional cycle-dir argument
-  const statsArgs = process.argv.slice(3);
-  let jsonFlag = false;
-  let cycleDir: string | undefined;
-
-  for (let i = 0; i < statsArgs.length; i++) {
-    const arg = statsArgs[i]!;
-    if (arg === '--json') {
-      jsonFlag = true;
-    } else if (!arg.startsWith('-')) {
-      cycleDir = arg;
-    }
-  }
-
-  if (!cycleDir) {
-    process.stderr.write(
-      'Usage: node --experimental-strip-types src/cli.ts stats [--json] <cycle-dir>\n',
-    );
-    process.exit(1);
-  }
-
-  const resolvedCycleDir = resolve(process.cwd(), cycleDir);
-  const eventsFile = join(resolvedCycleDir, 'events.jsonl');
-  const counts = countEventsByPhase(eventsFile);
-
-  if (jsonFlag) {
-    process.stdout.write(formatStatsJson(counts) + '\n');
-  } else {
-    process.stdout.write(formatStatsText(counts) + '\n');
-  }
-  process.exit(0);
-}
 
 // ── probe subcommand ─────────────────────────────────────────────────────────
 

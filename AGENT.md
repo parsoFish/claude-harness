@@ -1,4 +1,4 @@
-# Unifier Agent Memory — INIT-2026-05-26-claude-trail-verify-cascade-v3
+# Unifier Agent Memory — INIT-2026-05-26-claude-trail-verify-cascade-v2
 
 > Institutional memory across unifier-Ralph iterations. Read at the start of every iteration; updated at the end.
 
