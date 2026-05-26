@@ -1,4 +1,4 @@
-# Agent Memory — WI-3
+# Agent Memory — WI-4
 
 > Institutional memory for this work item across Ralph iterations. Read at the start of every iteration; updated at the end.
 
@@ -8,26 +8,20 @@ _(no brain context seeded — read theme files yourself if needed; the system pr
 
 ## What I've tried
 
-### Iteration 1 (complete)
-
-- Added `formatStatsJson(counts: Record<string, number>): string` to `src/stats.ts` — simply `return JSON.stringify(counts)`.
-- Created `tests/stats-json.test.ts` with three tests mirroring AC1, AC2, AC3.
-- Ran `node --test --experimental-strip-types tests/stats-json.test.ts` — all 3 tests pass.
-- Committed: `feat: add formatStatsJson to stats.ts and tests/stats-json.test.ts`
+_(updated by each iteration — most recent at the top)_
 
 ## What worked
 
-- `JSON.stringify(counts)` is sufficient — compact, no extra indentation, round-trips exactly.
-- Following the same test pattern as `tests/stats-text.test.ts` (node:test + node:assert/strict, TypeScript via --experimental-strip-types).
+_(append patterns/approaches that produced progress)_
 
 ## What didn't work
 
-_(nothing to record — solved in one iteration)_
+_(append dead-ends so future iterations don't re-tread them)_
 
 ## Open questions
 
-_(none)_
+_(things that aren't blocking but would be useful to clarify; reflector picks these up)_
 
 ## Notes for reflection
 
-_(nothing to escalate)_
+_(observations the reflector should capture into the brain; the agent doesn't write them itself, but flags here)_
