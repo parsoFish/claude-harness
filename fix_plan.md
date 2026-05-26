@@ -1,7 +1,7 @@
 # Fix Plan
 
-> Checklist for WI-4. Tick items as you complete them; add items as you discover sub-problems.
+> Checklist for WI-5. Tick items as you complete them; add items as you discover sub-problems.
 
-- [ ] AC1: GIVEN a valid cycle directory path is passed as the argument to 'claude-trail stats' WHEN the command is run without --json THEN the process exits 0 and stdout contains the text table produced by formatStatsText with the correct per-phase counts for that cycle directory
-- [ ] AC2: GIVEN a valid cycle directory path is passed with the --json flag WHEN the command 'claude-trail stats --json <cycle-dir>' is run THEN the process exits 0 and stdout is a single-line JSON object with per-phase counts and a 'total' key, matching formatStatsJson output
-- [ ] AC3: GIVEN the 'stats' subcommand is invoked with no cycle-dir argument WHEN the CLI is run THEN the process exits 1 and stderr contains a usage hint
+- [ ] AC1: GIVEN the fixture at tests/fixtures/cycle-INIT-FIXTURE-1/ is passed to 'claude-trail stats' WHEN the stats golden test runs THEN stdout matches the content of tests/fixtures/stats-golden.txt exactly (byte-for-byte after trimming trailing newline)
+- [ ] AC2: GIVEN the fixture at tests/fixtures/cycle-INIT-FIXTURE-1/ is passed to 'claude-trail stats --json' WHEN the stats JSON golden test runs THEN stdout is valid JSON and the parsed object matches the expected per-phase counts for the INIT-FIXTURE-1 events
+- [ ] AC3: GIVEN the golden file tests/fixtures/stats-golden.txt exists WHEN the text-format output of running stats on the fixture is compared to it THEN the comparison passes with no diff
