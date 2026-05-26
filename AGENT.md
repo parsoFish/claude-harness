@@ -1,27 +1,11 @@
-# Agent Memory — WI-5
+# Unifier Agent Memory — INIT-2026-05-26-claude-trail-verify-cascade-v3
 
-> Institutional memory for this work item across Ralph iterations. Read at the start of every iteration; updated at the end.
+> Institutional memory across unifier-Ralph iterations. Read at the start of every iteration; updated at the end.
 
-## Brain context (loaded at iteration 1)
-
-_(no brain context seeded — read theme files yourself if needed; the system prompt has the navigation index.)_
-
-## What I've tried
+## What I tried
 
 _(updated by each iteration — most recent at the top)_
 
-## What worked
-
-_(append patterns/approaches that produced progress)_
-
-## What didn't work
-
-_(append dead-ends so future iterations don't re-tread them)_
-
-## Open questions
-
-_(things that aren't blocking but would be useful to clarify; reflector picks these up)_
-
 ## Notes for reflection
 
-_(observations the reflector should capture into the brain; the agent doesn't write them itself, but flags here)_
+_(observations the reflector should capture into the brain)_

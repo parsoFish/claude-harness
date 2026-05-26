@@ -1,7 +1,22 @@
-# Fix Plan
+# Fix Plan — unifier sub-phase
 
-> Checklist for WI-5. Tick items as you complete them; add items as you discover sub-problems.
+> Initiative-level acceptance criteria. Tick each as you prove it against branch tip. Iteration 1 is initial prep; iterations 2+ react to either gate failures or send-back feedback.
 
-- [ ] AC1: GIVEN the fixture at tests/fixtures/cycle-INIT-FIXTURE-1/ is passed to 'claude-trail stats' WHEN the stats golden test runs THEN stdout matches the content of tests/fixtures/stats-golden.txt exactly (byte-for-byte after trimming trailing newline)
-- [ ] AC2: GIVEN the fixture at tests/fixtures/cycle-INIT-FIXTURE-1/ is passed to 'claude-trail stats --json' WHEN the stats JSON golden test runs THEN stdout is valid JSON and the parsed object matches the expected per-phase counts for the INIT-FIXTURE-1 events
-- [ ] AC3: GIVEN the golden file tests/fixtures/stats-golden.txt exists WHEN the text-format output of running stats on the fixture is compared to it THEN the comparison passes with no diff
+- [ ] AC1 (WI-1): GIVEN an events.jsonl file with events from multiple phases (architect, project-manager, developer-loop) WHEN countEventsByPhase is called with the path to that file THEN it returns a record mapping each phase name to the count of events in that phase, plus a 'total' key with the sum
+- [ ] AC2 (WI-1): GIVEN an events.jsonl where one phase has 3 events and another has 2 WHEN countEventsByPhase is called THEN the returned record has the correct per-phase counts and total equals 5
+- [ ] AC3 (WI-1): GIVEN an events.jsonl containing only blank lines and valid JSON lines WHEN countEventsByPhase is called THEN blank lines are skipped and only valid events contribute to the count
+- [ ] AC4 (WI-2): GIVEN a Record<string, number> with phase counts including a 'total' key, produced by countEventsByPhase WHEN formatStatsText is called with that record THEN it returns a string with a two-column table: left column is phase name, right column is the event count, with a header row 'phase' / 'events', phases listed in the order they appear in the record, and 'total' on the last row
+- [ ] AC5 (WI-2): GIVEN a record where the longest phase name is 'developer-loop' (13 chars) WHEN formatStatsText is called THEN the left column is padded so all lines align and the output matches the spec format shown in the initiative manifest
+- [ ] AC6 (WI-2): GIVEN a record with a single phase plus total WHEN formatStatsText is called THEN the output is a valid two-row table (header + 1 phase + total) with correct padding
+- [ ] AC7 (WI-3): GIVEN a Record<string, number> with phase counts including a 'total' key WHEN formatStatsJson is called with that record THEN it returns a JSON string that, when parsed, equals the input record exactly (same keys and values)
+- [ ] AC8 (WI-3): GIVEN a record {architect: 12, 'project-manager': 8, total: 20} WHEN formatStatsJson is called THEN the returned string is valid JSON and JSON.parse of it produces {architect: 12, 'project-manager': 8, total: 20}
+- [ ] AC9 (WI-3): GIVEN an empty record {} WHEN formatStatsJson is called THEN the returned string is '{}'
+- [ ] AC10 (WI-4): GIVEN a valid cycle directory path is passed as the argument to 'claude-trail stats' WHEN the command is run without --json THEN the process exits 0 and stdout contains the text table produced by formatStatsText with the correct per-phase counts for that cycle directory
+- [ ] AC11 (WI-4): GIVEN a valid cycle directory path is passed with the --json flag WHEN the command 'claude-trail stats --json <cycle-dir>' is run THEN the process exits 0 and stdout is a single-line JSON object with per-phase counts and a 'total' key, matching formatStatsJson output
+- [ ] AC12 (WI-4): GIVEN the 'stats' subcommand is invoked with no cycle-dir argument WHEN the CLI is run THEN the process exits 1 and stderr contains a usage hint
+- [ ] AC13 (WI-5): GIVEN the fixture at tests/fixtures/cycle-INIT-FIXTURE-1/ is passed to 'claude-trail stats' WHEN the stats golden test runs THEN stdout matches the content of tests/fixtures/stats-golden.txt exactly (byte-for-byte after trimming trailing newline)
+- [ ] AC14 (WI-5): GIVEN the fixture at tests/fixtures/cycle-INIT-FIXTURE-1/ is passed to 'claude-trail stats --json' WHEN the stats JSON golden test runs THEN stdout is valid JSON and the parsed object matches the expected per-phase counts for the INIT-FIXTURE-1 events
+- [ ] AC15 (WI-5): GIVEN the golden file tests/fixtures/stats-golden.txt exists WHEN the text-format output of running stats on the fixture is compared to it THEN the comparison passes with no diff
+- [ ] AC16 (WI-6): GIVEN a path to an empty directory (no events.jsonl inside) WHEN claude-trail stats is run with that path THEN the process exits 1 and stderr contains a message indicating events.jsonl was not found
+- [ ] AC17 (WI-6): GIVEN a path to a directory containing an events.jsonl with only blank lines WHEN claude-trail stats is run with that path THEN the process exits 0 and the output shows all phase counts as zero except total which is also zero
+- [ ] AC18 (WI-6): GIVEN a path that does not exist on the filesystem WHEN claude-trail stats is run with that path THEN the process exits 1 and stderr contains a message indicating the directory was not found
