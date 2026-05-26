@@ -62,3 +62,20 @@ export function formatStatsText(counts: Record<string, number>): string {
 
   return lines.join('\n');
 }
+
+/**
+ * Formats a phase-count record (as returned by countEventsByPhase) into a
+ * compact single-line JSON string.
+ *
+ * This is intentionally the simplest possible formatter: JSON.stringify(counts)
+ * with no extra indentation or wrapping.
+ *
+ * Example output:
+ *   {"architect":12,"project-manager":8,"developer-loop":47,"total":93}
+ *
+ * @param counts - Record<string, number> with phase counts and a 'total' key.
+ * @returns Compact JSON string.
+ */
+export function formatStatsJson(counts: Record<string, number>): string {
+  return JSON.stringify(counts);
+}
