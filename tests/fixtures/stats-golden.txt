@@ -1,0 +1,6 @@
+phase:           events
+architect        3
+project-manager  2
+developer        4
+cycle.end        1
+total            10
