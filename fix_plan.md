@@ -1,7 +1,7 @@
 # Fix Plan
 
-> Checklist for WI-1. Tick items as you complete them; add items as you discover sub-problems.
+> Checklist for WI-2. Tick items as you complete them; add items as you discover sub-problems.
 
-- [ ] AC1: GIVEN an events.jsonl file with events from multiple phases (architect, project-manager, developer-loop) WHEN countEventsByPhase is called with the path to that file THEN it returns a record mapping each phase name to the count of events in that phase, plus a 'total' key with the sum
-- [ ] AC2: GIVEN an events.jsonl where one phase has 3 events and another has 2 WHEN countEventsByPhase is called THEN the returned record has the correct per-phase counts and total equals 5
-- [ ] AC3: GIVEN an events.jsonl containing only blank lines and valid JSON lines WHEN countEventsByPhase is called THEN blank lines are skipped and only valid events contribute to the count
+- [ ] AC1: GIVEN a Record<string, number> with phase counts including a 'total' key, produced by countEventsByPhase WHEN formatStatsText is called with that record THEN it returns a string with a two-column table: left column is phase name, right column is the event count, with a header row 'phase' / 'events', phases listed in the order they appear in the record, and 'total' on the last row
+- [ ] AC2: GIVEN a record where the longest phase name is 'developer-loop' (13 chars) WHEN formatStatsText is called THEN the left column is padded so all lines align and the output matches the spec format shown in the initiative manifest
+- [ ] AC3: GIVEN a record with a single phase plus total WHEN formatStatsText is called THEN the output is a valid two-row table (header + 1 phase + total) with correct padding
