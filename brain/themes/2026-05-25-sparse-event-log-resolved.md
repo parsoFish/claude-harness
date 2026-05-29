@@ -48,4 +48,4 @@ result is unambiguous: 90 events where 1 was expected.
 
 - `_logs/2026-05-25T12-51-25_INIT-2026-05-25-claude-trail-verify-cascade/events.jsonl` — 90-event log
 - `brain/_raw/cycles/2026-05-25T12-51-25_INIT-2026-05-25-claude-trail-verify-cascade.md` — cycle archive
-- `brain/projects/claude-harness/themes/2026-05-25-sparse-event-log-fifth-cycle.md` — prior escalation
+- `./2026-05-25-sparse-event-log-fifth-cycle.md` — prior escalation

@@ -51,4 +51,4 @@ Both cycle retros have been constructed from git-log archaeology — this is uns
 
 - `_logs/INIT-2026-05-25-claude-trail-cost-only/events.jsonl` — the sparse log (cycle 2)
 - `brain/_raw/cycles/INIT-2026-05-25-claude-trail-cost-only.md` — cycle 2 archive
-- `brain/projects/claude-harness/themes/2026-05-25-sparse-event-log-observability-gap.md` — cycle 1 version of this antipattern
+- `./2026-05-25-sparse-event-log-observability-gap.md` — cycle 1 version of this antipattern

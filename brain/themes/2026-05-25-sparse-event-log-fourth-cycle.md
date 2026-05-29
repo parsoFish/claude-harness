@@ -61,4 +61,4 @@ This investigation has been recommended 3 times. It is now overdue.
 
 - `_logs/INIT-2026-05-25-claude-trail-since-flag/events.jsonl` — the sparse log (cycle 4)
 - `brain/_raw/cycles/INIT-2026-05-25-claude-trail-since-flag.md` — cycle 4 archive
-- `brain/projects/claude-harness/themes/2026-05-25-sparse-event-log-third-cycle.md` — cycle 3 version
+- `./2026-05-25-sparse-event-log-third-cycle.md` — cycle 3 version

@@ -1,0 +1,21 @@
+# Graphify exclusion list for claude-harness.
+# Scanned from project root so the graph covers both source code and brain themes.
+# Output goes to brain/graphify-out/ (three-brain model, Brain 3).
+
+# Dependencies
+node_modules/
+
+# Ephemeral forge working files
+.forge/
+AGENT.md
+PROMPT.md
+fix_plan.md
+
+# Architect planning artifacts (ephemeral)
+_architect/
+
+# Demo artifacts
+demo/
+
+# Graphify's own output
+brain/graphify-out/

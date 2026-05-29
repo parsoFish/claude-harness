@@ -40,9 +40,9 @@ the actual brief is whatever PLAN.md the architect produces.
   `_logs/`, `brain/`, the worktree's `.git/`, etc. No network calls.
 - **Operator:** claude. Claude answers the architect's interview
   questions in real time and files the verdict at ready-for-review.
-- **Project repo:** standalone (gitignored from forge), no GitHub
-  remote yet — the merge model is local fast-forward via the gh
-  shim (same as the e2e bench).
+- **Project repo:** standalone (gitignored from forge), with its own
+  GitHub remote `parsoFish/claude-harness` — the merge model is local
+  fast-forward via the gh shim (same as the e2e bench).
 
 ## Taste signals
 

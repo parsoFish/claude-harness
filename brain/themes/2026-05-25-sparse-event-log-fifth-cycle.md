@@ -57,4 +57,4 @@ Every retro has been reconstructed entirely from `git log` archaeology. This is 
 
 - `_logs/INIT-2026-05-25-claude-trail-format-flag/events.jsonl` — sparse log (cycle 5)
 - `brain/_raw/cycles/INIT-2026-05-25-claude-trail-format-flag.md` — cycle 5 archive
-- `brain/projects/claude-harness/themes/2026-05-25-sparse-event-log-fourth-cycle.md` — cycle 4 version with diagnostic steps
+- `./2026-05-25-sparse-event-log-fourth-cycle.md` — cycle 4 version with diagnostic steps

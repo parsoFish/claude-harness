@@ -65,5 +65,5 @@ Operator-level investigation needed. Check:
 
 - `_logs/INIT-2026-05-25-claude-trail-git-enrich/events.jsonl` — cycle 3 sparse log
 - `brain/_raw/cycles/INIT-2026-05-25-claude-trail-git-enrich.md` — cycle 3 archive
-- `brain/projects/claude-harness/themes/2026-05-25-sparse-event-log-second-cycle.md` — cycle 2 version
-- `brain/projects/claude-harness/themes/2026-05-25-sparse-event-log-observability-gap.md` — cycle 1 version
+- `./2026-05-25-sparse-event-log-second-cycle.md` — cycle 2 version
+- `./2026-05-25-sparse-event-log-observability-gap.md` — cycle 1 version

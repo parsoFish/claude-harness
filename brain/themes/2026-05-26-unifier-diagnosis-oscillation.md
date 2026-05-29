@@ -76,5 +76,5 @@ introducing new changes to address a misdiagnosed root cause.
 
 - `_logs/2026-05-26T08-17-13_INIT-2026-05-26-claude-trail-verify-cascade-v3/events.jsonl` — unifier iteration metadata (16 gate-failed, 15 iterations, last_assistant_text per iter)
 - `brain/_raw/cycles/2026-05-26T08-17-13_INIT-2026-05-26-claude-trail-verify-cascade-v3.md` — cycle archive
-- `brain/projects/claude-harness/themes/2026-05-25-unifier-wedge-preexisting-test-failures.md` — cycle 6 prior unifier-wedge theme
-- `brain/projects/claude-harness/themes/2026-05-25-wi-gate-vs-unifier-gate-mismatch.md` — structural gate mismatch theme
+- `./2026-05-25-unifier-wedge-preexisting-test-failures.md` — cycle 6 prior unifier-wedge theme
+- `./2026-05-25-wi-gate-vs-unifier-gate-mismatch.md` — structural gate mismatch theme

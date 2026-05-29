@@ -51,4 +51,4 @@ This instruction has been recommended in:
 
 - `brain/_raw/cycles/INIT-2026-05-25-claude-trail-format-flag.md` — cycle 5 archive (commit table)
 - `_logs/INIT-2026-05-25-claude-trail-format-flag/events.jsonl` — cycle 5 event log
-- `brain/projects/claude-harness/themes/2026-05-25-autocommit-rate-unactioned-flag.md` — cycle 4 escalation
+- `./2026-05-25-autocommit-rate-unactioned-flag.md` — cycle 4 escalation

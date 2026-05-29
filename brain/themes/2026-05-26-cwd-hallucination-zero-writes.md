@@ -69,4 +69,4 @@ When a ralph WI iteration ends with `writes: 0` AND the gate fails with "Could n
 
 - `_logs/2026-05-26T08-17-13_INIT-2026-05-26-claude-trail-verify-cascade-v3/events.jsonl` — WI-5 iteration metadata (reads=66, writes=0, bash=54, testRuns=6)
 - `brain/_raw/cycles/2026-05-26T08-17-13_INIT-2026-05-26-claude-trail-verify-cascade-v3.md` — cycle archive
-- `brain/projects/claude-harness/themes/2026-05-25-ralph-cwd-hallucination-per-iteration.md` — prior cwd-hallucination theme (cycle v2)
+- `./2026-05-25-ralph-cwd-hallucination-per-iteration.md` — prior cwd-hallucination theme (cycle v2)

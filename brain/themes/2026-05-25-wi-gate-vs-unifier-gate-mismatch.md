@@ -73,4 +73,4 @@ These are run at different times with different failure semantics.
 
 - `_logs/2026-05-25T12-51-25_INIT-2026-05-25-claude-trail-verify-cascade/events.jsonl` — gate event sequence
 - `brain/_raw/cycles/2026-05-25T12-51-25_INIT-2026-05-25-claude-trail-verify-cascade.md` — cycle archive
-- `brain/projects/claude-harness/themes/2026-05-25-sharp-gate-honoured-when-new-file-named.md` — sharp-gate pattern
+- `./2026-05-25-sharp-gate-honoured-when-new-file-named.md` — sharp-gate pattern

@@ -51,4 +51,4 @@ the required file) documented in `2026-05-25-sharp-gate-omission.md`.
 
 - `_logs/INIT-2026-05-25-claude-trail-since-flag/events.jsonl` — cycle 4 event log (commit `b370931` confirms test file creation)
 - `brain/_raw/cycles/INIT-2026-05-25-claude-trail-since-flag.md` — cycle 4 archive
-- `brain/projects/claude-harness/themes/2026-05-25-sharp-gate-omission.md` — cycle 3 failure for contrast
+- `./2026-05-25-sharp-gate-omission.md` — cycle 3 failure for contrast

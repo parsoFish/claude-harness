@@ -74,5 +74,5 @@ that ships new WIs but inherits unclean `main` will produce this overspend.
 
 - `_logs/2026-05-25T13-39-35_INIT-2026-05-26-claude-trail-verify-cascade-v2/events.jsonl` — 16 unifier.gate.initiative-failed events
 - `brain/_raw/cycles/2026-05-25T13-39-35_INIT-2026-05-26-claude-trail-verify-cascade-v2.md` — cycle archive
-- `brain/projects/claude-harness/themes/2026-05-25-unifier-wedge-preexisting-test-failures.md` — Cycle 6 first occurrence
-- `brain/projects/claude-harness/themes/2026-05-25-wi-gate-vs-unifier-gate-mismatch.md` — structural analysis
+- `./2026-05-25-unifier-wedge-preexisting-test-failures.md` — Cycle 6 first occurrence
+- `./2026-05-25-wi-gate-vs-unifier-gate-mismatch.md` — structural analysis
