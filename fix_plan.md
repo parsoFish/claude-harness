@@ -1,7 +1,8 @@
 # Fix Plan
 
-> Checklist for WI-5. Tick items as you complete them; add items as you discover sub-problems.
+> Checklist for WI-6. Tick items as you complete them; add items as you discover sub-problems.
 
-- [x] AC1: GIVEN the fixture cycle directory at tests/fixtures/cycle-INIT-FIXTURE-1 (10 events) WHEN readTailEvents + formatTailText is called with n=10 THEN the output matches the expected golden lines character-for-character
-- [x] AC2: GIVEN the fixture cycle directory at tests/fixtures/cycle-INIT-FIXTURE-1 (10 events) WHEN readTailEvents + formatTailText is called with n=3 THEN only the last 3 events appear in the output, matching expected golden lines
-- [x] AC3: GIVEN the fixture cycle directory at tests/fixtures/cycle-INIT-FIXTURE-1 WHEN readTailEvents + formatTailJson is called with n=10 THEN the JSON output parses to an array whose length equals min(10, total-events) and the first element's phase matches the fixture's first-in-tail event
+- [x] AC1: GIVEN a path to a directory that does not exist WHEN claude-trail tail <nonexistent-dir> is invoked via the CLI entry point THEN the process exits with a non-zero code and stderr contains a human-readable error message (no stack trace)
+- [x] AC2: GIVEN a path to a directory that exists but contains no events.jsonl WHEN claude-trail tail <empty-dir> is invoked THEN the process exits non-zero and stderr contains a message referencing the missing events.jsonl
+- [x] AC3: GIVEN a path to a file that exists but is not a directory WHEN claude-trail tail <file-path> is invoked THEN the process exits non-zero and stderr contains a clear error (no stack trace)
+- [x] AC4: GIVEN a valid cycle directory whose events.jsonl contains zero non-blank lines WHEN claude-trail tail <cycle-dir> is invoked THEN stdout is empty (or a single blank line) and the process exits 0
