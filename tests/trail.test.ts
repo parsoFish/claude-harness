@@ -19,7 +19,9 @@ const FIXTURES_DIR = resolve(__dirname, 'fixtures');
 const CYCLE_FIXTURE = join(FIXTURES_DIR, 'cycle-INIT-FIXTURE-1');
 const GOLDEN_FILE = join(FIXTURES_DIR, 'INIT-FIXTURE-1.trail.golden.md');
 const CLI_PATH = resolve(__dirname, '..', 'src', 'cli.ts');
-const PR_METADATA_FIXTURE = join(CYCLE_FIXTURE, '.forge', '_pr-metadata.json');
+// Tracked fixture (not under the gitignored .forge/ dir) so the test
+// survives a fresh worktree checkout.
+const PR_METADATA_FIXTURE = join(FIXTURES_DIR, 'INIT-FIXTURE-1.pr-metadata.json');
 
 /**
  * Recursively copies a directory tree from src to dst.
