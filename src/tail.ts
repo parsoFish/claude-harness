@@ -32,6 +32,20 @@ export function readTailEvents(filePath: string, n: number): EventRecord[] {
 }
 
 /**
+ * Formats an array of EventRecord objects into a JSON string for machine
+ * consumption. The result is a valid JSON array containing the same event
+ * objects in insertion order.
+ *
+ * An empty array returns the string `'[]'`.
+ *
+ * @param events - Array of EventRecord objects to serialise.
+ * @returns JSON string representation of the events array.
+ */
+export function formatTailJson(events: EventRecord[]): string {
+  return JSON.stringify(events);
+}
+
+/**
  * Formats an array of EventRecord objects into a compact human-readable string
  * for tail display. Each record becomes one line in the format:
  *
