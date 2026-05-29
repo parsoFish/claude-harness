@@ -11,6 +11,84 @@ import { countEventsByPhase, formatStatsText, formatStatsJson } from './stats.ts
 import { parseFilters } from './filter.ts';
 import { filterCycles } from './filter-renderer.ts';
 import type { CycleEvents } from './filter-renderer.ts';
+import { readTailEvents, formatTailText, formatTailJson } from './tail.ts';
+
+// ── tail subcommand ───────────────────────────────────────────────────────────
+
+if (process.argv[2] === 'tail') {
+  // Collect all argv after 'tail'
+  const tailArgv = process.argv.slice(3);
+
+  // Parse --n flag: supports "--n <value>" or "--n=<value>"
+  let tailN = 10;
+  for (let i = 0; i < tailArgv.length; i++) {
+    const arg = tailArgv[i]!;
+    if (arg === '--n' && i + 1 < tailArgv.length) {
+      const raw = tailArgv[i + 1]!;
+      const parsed = parseInt(raw, 10);
+      if (isNaN(parsed) || parsed < 1) {
+        process.stderr.write(`Error: --n must be a positive integer; got "${raw}"\n`);
+        process.exit(1);
+      }
+      tailN = parsed;
+      i++; // skip next
+    } else if (arg.startsWith('--n=')) {
+      const raw = arg.slice('--n='.length);
+      const parsed = parseInt(raw, 10);
+      if (isNaN(parsed) || parsed < 1) {
+        process.stderr.write(`Error: --n must be a positive integer; got "${raw}"\n`);
+        process.exit(1);
+      }
+      tailN = parsed;
+    }
+  }
+
+  // Parse --json flag (boolean)
+  const tailJson = tailArgv.includes('--json');
+
+  // Find positional arg: first arg that doesn't start with '--'
+  let tailCycleDir: string | undefined;
+  for (let i = 0; i < tailArgv.length; i++) {
+    const arg = tailArgv[i]!;
+    if (arg === '--n') {
+      i++; // skip next (value)
+    } else if (!arg.startsWith('-')) {
+      tailCycleDir = arg;
+      break;
+    }
+  }
+
+  if (!tailCycleDir) {
+    process.stderr.write(
+      'Usage: node --experimental-strip-types src/cli.ts tail [--n <N>] [--json] <cycle-dir>\n',
+    );
+    process.exit(1);
+  }
+
+  const resolvedTailDir = resolve(process.cwd(), tailCycleDir);
+
+  if (!existsSync(resolvedTailDir)) {
+    process.stderr.write(`Error: cycle directory not found: "${resolvedTailDir}"\n`);
+    process.exit(1);
+  }
+
+  const tailEventsFile = join(resolvedTailDir, 'events.jsonl');
+
+  if (!existsSync(tailEventsFile)) {
+    process.stderr.write(`Error: events.jsonl not found in "${resolvedTailDir}"\n`);
+    process.exit(1);
+  }
+
+  const tailEvents = readTailEvents(tailEventsFile, tailN);
+
+  if (tailJson) {
+    process.stdout.write(formatTailJson(tailEvents) + '\n');
+  } else {
+    process.stdout.write(formatTailText(tailEvents) + '\n');
+  }
+
+  process.exit(0);
+}
 
 // ── probe subcommand ─────────────────────────────────────────────────────────
 

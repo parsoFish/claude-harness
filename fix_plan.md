@@ -1,7 +1,8 @@
 # Fix Plan
 
-> Checklist for WI-3. Tick items as you complete them; add items as you discover sub-problems.
+> Checklist for WI-4. Tick items as you complete them; add items as you discover sub-problems.
 
-- [ ] AC1: GIVEN an array of EventRecord objects WHEN formatTailJson(events) is called THEN it returns a valid JSON string that parses to an array of the same event objects
-- [ ] AC2: GIVEN an empty EventRecord array WHEN formatTailJson([]) is called THEN it returns the string '[]'
-- [ ] AC3: GIVEN two EventRecord objects in insertion order WHEN formatTailJson(events) is called and the result is parsed THEN the parsed array has length 2 and index 0 matches the first event object exactly
+- [x] AC1: GIVEN a valid cycle directory path containing an events.jsonl with 12 events WHEN claude-trail tail <cycle-dir> is run THEN stdout contains exactly 10 lines in '[phase] event_type' format and the exit code is 0
+- [x] AC2: GIVEN a valid cycle directory with 12 events WHEN claude-trail tail --n 3 <cycle-dir> is run THEN stdout contains exactly 3 lines and the exit code is 0
+- [x] AC3: GIVEN a valid cycle directory with 5 events WHEN claude-trail tail --json <cycle-dir> is run THEN stdout is a valid JSON array with 5 elements and the exit code is 0
+- [x] AC4: GIVEN a cycle directory whose events.jsonl contains 3 events WHEN claude-trail tail --n 10 <cycle-dir> is run THEN stdout contains exactly 3 lines (N larger than count; no crash)
