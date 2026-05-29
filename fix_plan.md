@@ -1,8 +1,8 @@
 # Fix Plan
 
-> Checklist for WI-1. Tick items as you complete them; add items as you discover sub-problems.
+> Checklist for WI-2. Tick items as you complete them; add items as you discover sub-problems.
 
-- [ ] AC1: GIVEN a valid events.jsonl path with 15 events WHEN readTailEvents(path, 10) is called THEN it returns exactly the last 10 EventRecord objects in chronological order (oldest first)
-- [ ] AC2: GIVEN a valid events.jsonl path with 5 events WHEN readTailEvents(path, 10) is called with N larger than total count THEN it returns all 5 events (no error, no padding)
-- [ ] AC3: GIVEN a valid events.jsonl path with 0 non-blank lines WHEN readTailEvents(path, 10) is called THEN it returns an empty array
-- [ ] AC4: GIVEN a path that does not exist WHEN readTailEvents is called THEN it throws an Error whose message contains the path
+- [ ] AC1: GIVEN an array of EventRecord objects each with phase, event, and optional detail fields WHEN formatTailText(events) is called THEN it returns a newline-joined string where each line is '[<phase>] <event_type>' with optional ' <detail>' appended when a detail field is present
+- [ ] AC2: GIVEN an empty EventRecord array WHEN formatTailText([]) is called THEN it returns an empty string
+- [ ] AC3: GIVEN an event with phase='developer-loop' and event='wi.start' and no extra fields WHEN formatTailText([event]) is called THEN the line is '[developer-loop] wi.start' (no trailing space or extra tokens)
+- [ ] AC4: GIVEN an event with phase='developer-loop' and event='wi.start' and work_item_id='FEAT-1-WI-1' WHEN formatTailText([event]) is called THEN the line is '[developer-loop] wi.start FEAT-1-WI-1'
