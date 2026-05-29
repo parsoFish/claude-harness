@@ -7,6 +7,7 @@ import { findThemesForInitiative, renderThemesSection } from './brain.ts';
 import { readPrMetadata } from './pr.ts';
 import { getCommits } from './git.ts';
 import { probeCore, formatProbeSummary } from './probe.ts';
+import { countEventsByPhase, formatStatsText, formatStatsJson } from './stats.ts';
 import { parseFilters } from './filter.ts';
 import { filterCycles } from './filter-renderer.ts';
 import type { CycleEvents } from './filter-renderer.ts';
@@ -43,6 +44,46 @@ if (process.argv[2] === 'probe') {
 
   const result = probeCore(eventsFile);
   process.stdout.write(formatProbeSummary(result) + '\n');
+  process.exit(0);
+}
+
+// ── stats subcommand ─────────────────────────────────────────────────────────
+// `stats <cycle-dir> [--json]` — per-phase event counts for one cycle.
+
+if (process.argv[2] === 'stats') {
+  const rest = process.argv.slice(3);
+  const json = rest.includes('--json');
+  const cycleDir = rest.find((a) => !a.startsWith('-'));
+
+  if (!cycleDir) {
+    process.stderr.write(
+      'Usage: node --experimental-strip-types src/cli.ts stats <cycle-dir> [--json]\n',
+    );
+    process.exit(1);
+  }
+
+  const resolvedCycleDir = resolve(process.cwd(), cycleDir);
+
+  if (!existsSync(resolvedCycleDir)) {
+    process.stderr.write(
+      `Error: cycle directory not found: "${resolvedCycleDir}"\n`,
+    );
+    process.exit(1);
+  }
+
+  const eventsFile = join(resolvedCycleDir, 'events.jsonl');
+
+  if (!existsSync(eventsFile)) {
+    process.stderr.write(
+      `Error: events.jsonl not found in "${resolvedCycleDir}"\n`,
+    );
+    process.exit(1);
+  }
+
+  const counts = countEventsByPhase(eventsFile);
+  process.stdout.write(
+    (json ? formatStatsJson(counts) : formatStatsText(counts)) + '\n',
+  );
   process.exit(0);
 }
 
