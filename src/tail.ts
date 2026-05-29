@@ -30,3 +30,26 @@ export function readTailEvents(filePath: string, n: number): EventRecord[] {
   // Return the last n records in chronological order (oldest first)
   return records.slice(-n);
 }
+
+/**
+ * Formats an array of EventRecord objects into a compact human-readable string
+ * for tail display. Each record becomes one line in the format:
+ *
+ *   `[<phase>] <event_type>[ <detail>]`
+ *
+ * Where `<detail>` is the event's `work_item_id` field (if present as a string).
+ * No trailing space is added when `work_item_id` is absent.
+ *
+ * Lines are joined with `\n`. An empty array returns an empty string.
+ *
+ * @param events - Array of EventRecord objects to format.
+ * @returns Newline-joined string of formatted event lines.
+ */
+export function formatTailText(events: EventRecord[]): string {
+  const lines = events.map((evt) => {
+    const base = `[${evt.phase}] ${evt.event}`;
+    const detail = evt['work_item_id'];
+    return typeof detail === 'string' ? `${base} ${detail}` : base;
+  });
+  return lines.join('\n');
+}
