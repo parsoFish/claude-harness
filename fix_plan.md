@@ -1,8 +1,7 @@
 # Fix Plan
 
-> Checklist for WI-4. Tick items as you complete them; add items as you discover sub-problems.
+> Checklist for WI-5. Tick items as you complete them; add items as you discover sub-problems.
 
-- [x] AC1: GIVEN a valid cycle directory path containing an events.jsonl with 12 events WHEN claude-trail tail <cycle-dir> is run THEN stdout contains exactly 10 lines in '[phase] event_type' format and the exit code is 0
-- [x] AC2: GIVEN a valid cycle directory with 12 events WHEN claude-trail tail --n 3 <cycle-dir> is run THEN stdout contains exactly 3 lines and the exit code is 0
-- [x] AC3: GIVEN a valid cycle directory with 5 events WHEN claude-trail tail --json <cycle-dir> is run THEN stdout is a valid JSON array with 5 elements and the exit code is 0
-- [x] AC4: GIVEN a cycle directory whose events.jsonl contains 3 events WHEN claude-trail tail --n 10 <cycle-dir> is run THEN stdout contains exactly 3 lines (N larger than count; no crash)
+- [x] AC1: GIVEN the fixture cycle directory at tests/fixtures/cycle-INIT-FIXTURE-1 (10 events) WHEN readTailEvents + formatTailText is called with n=10 THEN the output matches the expected golden lines character-for-character
+- [x] AC2: GIVEN the fixture cycle directory at tests/fixtures/cycle-INIT-FIXTURE-1 (10 events) WHEN readTailEvents + formatTailText is called with n=3 THEN only the last 3 events appear in the output, matching expected golden lines
+- [x] AC3: GIVEN the fixture cycle directory at tests/fixtures/cycle-INIT-FIXTURE-1 WHEN readTailEvents + formatTailJson is called with n=10 THEN the JSON output parses to an array whose length equals min(10, total-events) and the first element's phase matches the fixture's first-in-tail event
