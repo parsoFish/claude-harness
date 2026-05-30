@@ -278,10 +278,15 @@ describe('--compact flag: AC6 (full trail unchanged without --compact)', () => {
     assert.equal(exitCode, 0, `CLI exited with ${exitCode}; stderr: ${stderr}`);
 
     const golden = readFileSync(FULL_GOLDEN_PATH, 'utf8');
+
+    // Normalise the absolute tmpdir prefix in theme paths to the stable
+    // placeholder used in the golden file (same pattern as trail.test.ts).
+    const normalised = stdout.split(cycleDir).join('{CYCLE_DIR}');
+
     assert.equal(
-      stdout.trimEnd(),
+      normalised.trimEnd(),
       golden.trimEnd(),
-      `stdout (without --compact) did not match full golden file.\nExpected (trimEnd):\n${golden.trimEnd()}\n\nGot (trimEnd):\n${stdout.trimEnd()}`,
+      `stdout (without --compact) did not match full golden file.\nExpected (trimEnd):\n${golden.trimEnd()}\n\nGot (trimEnd):\n${normalised.trimEnd()}`,
     );
   });
 });
