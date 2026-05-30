@@ -304,6 +304,27 @@ for (let i = 3; i < process.argv.length; i++) {
 // Parse --compact flag from argv: boolean, no value
 const compactFlag = process.argv.slice(3).includes('--compact');
 
+// ── Conflict guards for --compact ─────────────────────────────────────────────
+// --compact is mutually exclusive with --format json, --out, and --since.
+if (compactFlag && formatValue === 'json') {
+  process.stderr.write(
+    'Error: --compact cannot be used with --format json; these flags are mutually exclusive.\n',
+  );
+  process.exit(1);
+}
+if (compactFlag && outValue !== undefined) {
+  process.stderr.write(
+    'Error: --compact cannot be used with --out; these flags are mutually exclusive.\n',
+  );
+  process.exit(1);
+}
+if (compactFlag && sinceValue !== undefined) {
+  process.stderr.write(
+    'Error: --compact cannot be used with --since; these flags are mutually exclusive.\n',
+  );
+  process.exit(1);
+}
+
 // Resolve the _logs directory relative to cwd
 const logsDir = resolve(process.cwd(), '_logs');
 
