@@ -32,14 +32,30 @@ import { spawnSync } from 'node:child_process';
 import {
   mkdtempSync,
   mkdirSync,
+  copyFileSync,
   writeFileSync,
   readFileSync,
+  readdirSync,
   rmSync,
 } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
+
+/** Recursively copies a directory tree from src to dst. */
+function copyDirRecursive(src: string, dst: string): void {
+  mkdirSync(dst, { recursive: true });
+  for (const entry of readdirSync(src, { withFileTypes: true })) {
+    const srcPath = join(src, entry.name);
+    const dstPath = join(dst, entry.name);
+    if (entry.isDirectory()) {
+      copyDirRecursive(srcPath, dstPath);
+    } else {
+      copyFileSync(srcPath, dstPath);
+    }
+  }
+}
 
 /** Run the CLI from a given cwd directory, returning stdout/stderr/exitCode. */
 function runCli(
@@ -66,7 +82,7 @@ function runCli(
 
 const INIT_ID = 'INIT-FIXTURE-1';
 // Cycle directory name must contain INIT_ID so the CLI can match it
-const CYCLE_NAME = `2026-05-24T10-00-00Z_${INIT_ID}`;
+const CYCLE_NAME = `cycle-${INIT_ID}`;
 
 const FIXTURES_DIR = resolve(
   import.meta.dirname ?? join(process.cwd(), 'tests'),
@@ -79,30 +95,23 @@ const FULL_GOLDEN_PATH = join(FIXTURES_DIR, 'INIT-FIXTURE-1.trail.golden.md');
 // ── Shared tmpdir setup ───────────────────────────────────────────────────────
 
 let fixtureDir: string;
+let cycleDir: string;
 
 before(() => {
   fixtureDir = mkdtempSync(join(tmpdir(), 'compact-flag-test-'));
   const logsDir = join(fixtureDir, '_logs');
   mkdirSync(logsDir);
-  const cycleDir = join(logsDir, CYCLE_NAME);
-  mkdirSync(cycleDir);
+  cycleDir = join(logsDir, CYCLE_NAME);
 
-  // Copy the frozen fixture files into the tmpdir
+  // Recursively copy the entire frozen fixture directory (including brain/)
   const srcDir = join(FIXTURES_DIR, 'cycle-INIT-FIXTURE-1');
-  writeFileSync(join(cycleDir, 'events.jsonl'), readFileSync(join(srcDir, 'events.jsonl')));
+  copyDirRecursive(srcDir, cycleDir);
 
-  // Copy commits.json if it exists (for the full-trail test AC6)
-  const commitsJsonSrc = join(srcDir, 'commits.json');
-  try {
-    writeFileSync(join(cycleDir, 'commits.json'), readFileSync(commitsJsonSrc));
-  } catch {
-    // commits.json may not be present — that's fine
-  }
-
-  // Copy PR metadata at the initiative root if present
+  // Place PR metadata at <fixtureDir>/.forge/_pr-metadata.json (where CLI reads it)
   const prMetaSrc = join(FIXTURES_DIR, `${INIT_ID}.pr-metadata.json`);
+  mkdirSync(join(fixtureDir, '.forge'), { recursive: true });
   try {
-    writeFileSync(join(fixtureDir, `${INIT_ID}.pr-metadata.json`), readFileSync(prMetaSrc));
+    copyFileSync(prMetaSrc, join(fixtureDir, '.forge', '_pr-metadata.json'));
   } catch {
     // pr-metadata.json may not be present — that's fine
   }
