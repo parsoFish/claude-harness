@@ -2,7 +2,7 @@ import { existsSync, readdirSync, statSync } from 'node:fs';
 import { writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { readEvents, rollupByPhase, costByPhase, extractCycleMeta } from './events.ts';
-import { renderTitle, renderSummarySection, renderPhasesSection, renderCostSection, renderGitActivity, renderPrSection } from './trail.ts';
+import { renderTitle, renderSummarySection, renderPhasesSection, renderCostSection, renderGitActivity, renderPrSection, renderCompact } from './trail.ts';
 import { findThemesForInitiative, renderThemesSection } from './brain.ts';
 import { readPrMetadata } from './pr.ts';
 import { getCommits } from './git.ts';
@@ -301,6 +301,9 @@ for (let i = 3; i < process.argv.length; i++) {
   }
 }
 
+// Parse --compact flag from argv: boolean, no value
+const compactFlag = process.argv.slice(3).includes('--compact');
+
 // Resolve the _logs directory relative to cwd
 const logsDir = resolve(process.cwd(), '_logs');
 
@@ -433,6 +436,10 @@ if (formatValue === 'json') {
   };
 
   process.stdout.write(JSON.stringify(jsonOutput) + '\n');
+} else if (compactFlag) {
+  // ── Compact output branch ──────────────────────────────────────────────────
+  process.stdout.write(renderCompact(initiativeId, verdict, costUsd));
+  process.exit(0);
 } else {
   // ── Markdown output branch (default) ──────────────────────────────────────
   let trailContent = '';

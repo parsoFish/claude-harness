@@ -110,6 +110,24 @@ export function renderPrSection(
 }
 
 /**
+ * Renders a compact summary of a trail: title, verdict, and cost only.
+ *
+ * @param initiativeId - The initiative identifier (e.g. INIT-2026-05-24-example).
+ * @param verdict - The cycle verdict (e.g. 'approve', 'reject', '(unknown)').
+ * @param costUsd - Total cost in USD.
+ * @returns A 3-line markdown string with a trailing newline:
+ *          `# Trail — <initiativeId>\nVerdict: <verdict>\nCost: $<costUsd.toFixed(2)>\n`
+ */
+export function renderCompact(initiativeId: string, verdict: string, costUsd: number): string {
+  return [
+    `# Trail — ${initiativeId}`,
+    `Verdict: ${verdict}`,
+    `Cost: $${costUsd.toFixed(2)}`,
+    '',
+  ].join('\n');
+}
+
+/**
  * Renders the combined Git activity section of a trail document.
  *
  * Contains two sub-blocks:
