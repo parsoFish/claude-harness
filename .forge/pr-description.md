@@ -1,23 +1,25 @@
 ## Why
 
-Long AI conversation trails are hard to review. The raw `claude trail` output includes all intermediate reasoning steps, repeated tool calls, and assistant "thinking" noise — making it impractical to share trails for code review or archival. The `--compact` flag gives users a clean, conflict-free summary they can actually read.
+Reading a full `claude trail` document (with ## Summary, ## Phases, ## Cost rollup, ## Git activity sections) is cumbersome when you just want to check verdict and cost — e.g. from a CI status script or a quick glance. There was no terse, machine-friendly output mode. This initiative adds `--compact`, a single-purpose flag that collapses the trail to three lines: title, verdict, and cost.
 
 ## What
 
-- New `--compact` CLI flag on `claude trail` (WI-1: `src/cli.ts`)
-- Compact summarisation logic in `src/trail.ts` — collapses duplicate tool calls, strips intermediate reasoning, surfaces only meaningful user/assistant exchanges
-- Conflict-resolution pass that deterministically handles duplicate tool invocations (WI-3)
-- Golden-file regression test for compact output format
-- Three new test suites: `tests/compact-basic.test.ts`, `tests/compact-conflicts.test.ts`, `tests/compact-flag.test.ts` (874 lines of coverage)
+- **`src/trail.ts`** — new `renderCompact(initiativeId, verdict, costUsd)` function that returns the exact 3-line format: `# Trail — <id>\nVerdict: <v>\nCost: $<c>\n`.
+- **`src/cli.ts`** — `--compact` boolean flag parsed from argv; compact/non-compact output branches; three mutual-exclusion guards (`--compact` + `--format json`, `--compact` + `--out`, `--compact` + `--since`) each exit non-zero with an explanatory stderr message naming both conflicting flags.
+- **`tests/compact-basic.test.ts`** (210 lines) — unit tests for `renderCompact` covering approve verdicts, unknown verdicts, zero cost, fractional cost.
+- **`tests/compact-conflicts.test.ts`** (294 lines) — CLI integration tests for all three mutual-exclusion combinations (exit code + stderr content).
+- **`tests/compact-flag.test.ts`** (292 lines) — end-to-end CLI tests using the INIT-FIXTURE-1 fixture: golden-file comparison, conflict flags from fixture dir, and regression guard that the non-compact output is unchanged.
+- **`tests/fixtures/INIT-FIXTURE-1.trail-compact.golden.md`** (3 lines) — compact output golden file; used as the byte-for-byte reference in AC7/AC8.
+
+All 245 tests pass (`npm test`). 12 acceptance criteria across 3 work items are green.
 
 ## How
 
-The compact pass is implemented as a post-processing step in `src/trail.ts`. After parsing a trail file, if `--compact` is requested:
-1. Tool calls are deduplicated by a stable key (tool name + input hash); only the last result is kept.
-2. Intermediate assistant reasoning blocks (without tool use) are dropped.
-3. Remaining turns are re-serialised into the compact markdown format (golden-file at `tests/fixtures/...`).
+`renderCompact` in `src/trail.ts` is a pure function — it receives the already-parsed `initiativeId`, `verdict`, and `costUsd` values (the same ones used by the full markdown render path) and formats them with `Array.join('\n')`. No new parsing, no new I/O.
 
-The CLI (`src/cli.ts`) wires the new `--compact` boolean option through to the trail parser and exits cleanly when the flag is absent (no behaviour change for existing users).
+In `src/cli.ts` the `--compact` flag is detected with `process.argv.slice(3).includes('--compact')`. The three conflict guards run immediately after flag parsing (before any file I/O) and call `process.exit(1)` with an unambiguous stderr message. The compact output branch reuses `extractCycleMeta` and the existing cost accumulation loop — no duplicated logic.
+
+The golden file is produced by running the CLI against the INIT-FIXTURE-1 fixture (verdict=approve, two 0.12 USD events → $0.24 total) and is committed verbatim. The test reads it with `readFileSync` and compares stdout with `trimEnd()` to avoid trailing-newline noise.
 
 ## Demo
 
