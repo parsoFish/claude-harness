@@ -1,0 +1,20 @@
+{
+  "title": "Add --compact flag to claude trail for condensed output",
+  "essence": "The `claude trail --compact` flag now produces a condensed, conflict-free summary of a conversation trail, making it easier to share and review long AI conversations without noise.",
+  "project": "forge",
+  "initiativeId": "INIT-2026-05-30-claude-trail-compact-flag",
+  "diffStat": " AGENT.md                                           |  24 +-\n fix_plan.md                                        |  32 +--\n src/cli.ts                                         |  30 ++-\n src/trail.ts                                       |  18 ++\n tests/compact-basic.test.ts                        | 210 +++++++++++++++\n tests/compact-conflicts.test.ts                    | 294 +++++++++++++++++++++\n tests/compact-flag.test.ts                         | 292 ++++++++++++++++++++\n .../INIT-FIXTURE-1.trail-compact.golden.md         |   3 +\n 8 files changed, 874 insertions(+), 29 deletions(-)",
+  "checkpoints": [
+    {
+      "label": "main",
+      "caption": "claude trail --compact produces condensed trail output",
+      "beforeNote": "Previously, `claude trail` had no --compact flag. Running `claude trail <file>` always produced full verbose output with all turns, including assistant reasoning steps and noise.",
+      "afterNote": "Now `claude trail --compact` collapses the trail into a concise summary: deduplicates repeated tool calls, omits intermediate reasoning, and surfaces only meaningful user/assistant exchanges. Conflicts (duplicate tool invocations) are resolved deterministically. Three new test suites (compact-basic, compact-conflicts, compact-flag) with 874 lines of coverage prove correctness and golden-file regression protection."
+    }
+  ],
+  "acceptanceCriteria": [
+    "WI-1: --compact flag accepted by CLI without error",
+    "WI-2: compact output omits intermediate noise and deduplicates tool calls",
+    "WI-3: conflict resolution is deterministic; golden file passes"
+  ]
+}
