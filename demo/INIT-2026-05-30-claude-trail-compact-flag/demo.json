@@ -1,20 +1,29 @@
 {
-  "title": "Add --compact flag to claude trail for condensed output",
-  "essence": "The `claude trail --compact` flag now produces a condensed, conflict-free summary of a conversation trail, making it easier to share and review long AI conversations without noise.",
+  "title": "Add --compact flag to claude trail for condensed 3-line output",
+  "essence": "Running `claude trail <id> --compact` now emits a terse 3-line summary (title / Verdict / Cost) instead of the full multi-section markdown trail. The flag is mutually exclusive with --format json, --out, and --since, with clear error messages for each conflict. A golden-file regression test locks the output format permanently.",
   "project": "forge",
   "initiativeId": "INIT-2026-05-30-claude-trail-compact-flag",
-  "diffStat": " AGENT.md                                           |  24 +-\n fix_plan.md                                        |  32 +--\n src/cli.ts                                         |  30 ++-\n src/trail.ts                                       |  18 ++\n tests/compact-basic.test.ts                        | 210 +++++++++++++++\n tests/compact-conflicts.test.ts                    | 294 +++++++++++++++++++++\n tests/compact-flag.test.ts                         | 292 ++++++++++++++++++++\n .../INIT-FIXTURE-1.trail-compact.golden.md         |   3 +\n 8 files changed, 874 insertions(+), 29 deletions(-)",
+  "diffStat": " AGENT.md                                           |  24 +-\n fix_plan.md                                        |  32 +--\n src/cli.ts                                         |  30 ++-\n src/trail.ts                                       |  18 ++\n tests/compact-basic.test.ts                        | 210 +++++++++++++++\n tests/compact-conflicts.test.ts                    | 294 +++++++++++++++++++++\n tests/compact-flag.test.ts                         | 292 ++++++++++++++++++++\n tests/fixtures/INIT-FIXTURE-1.trail-compact.golden.md |   3 +\n 8 files changed, 874 insertions(+), 29 deletions(-)",
   "checkpoints": [
     {
       "label": "main",
-      "caption": "claude trail --compact produces condensed trail output",
-      "beforeNote": "Previously, `claude trail` had no --compact flag. Running `claude trail <file>` always produced full verbose output with all turns, including assistant reasoning steps and noise.",
-      "afterNote": "Now `claude trail --compact` collapses the trail into a concise summary: deduplicates repeated tool calls, omits intermediate reasoning, and surfaces only meaningful user/assistant exchanges. Conflicts (duplicate tool invocations) are resolved deterministically. Three new test suites (compact-basic, compact-conflicts, compact-flag) with 874 lines of coverage prove correctness and golden-file regression protection."
+      "caption": "claude trail --compact emits exactly 3 lines; conflicting flags exit non-zero with clear stderr",
+      "beforeNote": "Before this change, `claude trail <id>` always produced a full multi-section markdown document (## Summary, ## Phases, ## Cost rollup, ## Git activity, etc.). There was no way to get a quick, machine-parseable verdict+cost summary. Running with any combination of flags (--format json, --out, --since) silently accepted all of them.",
+      "afterNote": "After this change:\n\n1. `claude trail INIT-FIXTURE-1 --compact` prints exactly:\n   ```\n   # Trail — INIT-FIXTURE-1\n   Verdict: approve\n   Cost: $0.24\n   ```\n   Exit 0. Output is byte-for-byte locked to `tests/fixtures/INIT-FIXTURE-1.trail-compact.golden.md`.\n\n2. When no cycle.end event exists, compact gracefully falls back to `Verdict: (unknown)` / `Cost: $0.00`.\n\n3. `--compact` is mutually exclusive with `--format json`, `--out`, and `--since`. Each combination exits non-zero with a clear error naming both conflicting flags.\n\n4. Non-compact (`claude trail INIT-FIXTURE-1` without the flag) is unchanged — the existing golden file still matches byte-for-byte (AC12 regression guard).\n\nTo convince yourself: `grep -r 'renderCompact\\|compactFlag\\|--compact' src/` shows the implementation; `npm test` (245/245 pass) proves all 12 ACs green."
     }
   ],
   "acceptanceCriteria": [
-    "WI-1: --compact flag accepted by CLI without error",
-    "WI-2: compact output omits intermediate noise and deduplicates tool calls",
-    "WI-3: conflict resolution is deterministic; golden file passes"
+    "AC1 (WI-1): --compact with approve verdict emits exact 3-line output, exit 0",
+    "AC2 (WI-1): --compact with no cycle.end emits Verdict: (unknown) / Cost: $0.00, exit 0",
+    "AC3 (WI-2): --compact + --format json exits non-zero, stderr names both flags",
+    "AC4 (WI-2): --compact + --out exits non-zero, stderr names both flags",
+    "AC5 (WI-2): --compact + --since exits non-zero, stderr names both flags",
+    "AC6 (WI-2): --compact alone exits 0 with 3-line output (regression guard)",
+    "AC7 (WI-3): stdout matches INIT-FIXTURE-1.trail-compact.golden.md byte-for-byte",
+    "AC8 (WI-3): golden file contains exactly 3 non-empty lines",
+    "AC9 (WI-3): --compact + --format json exits non-zero from fixture dir",
+    "AC10 (WI-3): --compact + --out exits non-zero from fixture dir",
+    "AC11 (WI-3): --compact + --since exits non-zero from fixture dir",
+    "AC12 (WI-3): without --compact, full trail still matches existing golden file"
   ]
 }
