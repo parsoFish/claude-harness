@@ -2,7 +2,7 @@ import { existsSync, readdirSync, statSync } from 'node:fs';
 import { writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { readEvents, rollupByPhase, costByPhase, extractCycleMeta } from './events.ts';
-import { renderTitle, renderSummarySection, renderPhasesSection, renderCostSection, renderGitActivity, renderPrSection } from './trail.ts';
+import { renderTitle, renderSummarySection, renderPhasesSection, renderCostSection, renderGitActivity, renderPrSection, renderCompact } from './trail.ts';
 import { findThemesForInitiative, renderThemesSection } from './brain.ts';
 import { readPrMetadata } from './pr.ts';
 import { getCommits } from './git.ts';
@@ -301,6 +301,23 @@ for (let i = 3; i < process.argv.length; i++) {
   }
 }
 
+// Parse --compact flag (boolean): present if any argv after position 3 is '--compact'
+const compactFlag = process.argv.slice(3).includes('--compact');
+
+// Conflict checks: --compact is not compatible with --format json, --out, or --since
+if (compactFlag && formatValue === 'json') {
+  process.stderr.write('Error: --compact is not compatible with --format json\n');
+  process.exit(1);
+}
+if (compactFlag && outValue !== undefined) {
+  process.stderr.write('Error: --compact is not compatible with --out\n');
+  process.exit(1);
+}
+if (compactFlag && sinceValue !== undefined) {
+  process.stderr.write('Error: --compact is not compatible with --since\n');
+  process.exit(1);
+}
+
 // Resolve the _logs directory relative to cwd
 const logsDir = resolve(process.cwd(), '_logs');
 
@@ -404,6 +421,13 @@ for (const dir of selectedCycleDirs) {
 // ── Render ────────────────────────────────────────────────────────────────────
 
 const prMeta = readPrMetadata(process.cwd());
+
+// ── Compact output branch (--compact short-circuits full rendering) ──────────
+if (compactFlag) {
+  const compactContent = renderCompact(initiativeId, verdict, costUsd);
+  process.stdout.write(compactContent);
+  process.exit(0);
+}
 
 if (formatValue === 'json') {
   // ── JSON output branch ─────────────────────────────────────────────────────

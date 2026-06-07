@@ -110,6 +110,31 @@ export function renderPrSection(
 }
 
 /**
+ * Renders a compact single-initiative summary (3 lines + trailing newline).
+ *
+ * Format:
+ *   # Trail — <initiativeId>
+ *   Verdict: <verdict>
+ *   Cost: $<costUsd formatted to 2 decimal places>
+ *
+ * @param initiativeId - The initiative identifier.
+ * @param verdict - The cycle verdict (e.g. 'approve', '(unknown)').
+ * @param costUsd - Total cost in USD.
+ * @returns A 3-line string with a trailing newline.
+ */
+export function renderCompact(
+  initiativeId: string,
+  verdict: string,
+  costUsd: number,
+): string {
+  return [
+    `# Trail — ${initiativeId}`,
+    `Verdict: ${verdict}`,
+    `Cost: $${costUsd.toFixed(2)}`,
+  ].join('\n') + '\n';
+}
+
+/**
  * Renders the combined Git activity section of a trail document.
  *
  * Contains two sub-blocks:
