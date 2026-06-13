@@ -1,4 +1,4 @@
-# Agent Memory — WI-3
+# Agent Memory — WI-1
 
 > Institutional memory for this work item across Ralph iterations. Read at the start of every iteration; updated at the end.
 
@@ -10,18 +10,30 @@ _(no brain context seeded — read theme files yourself if needed; the system pr
 
 _(updated by each iteration — most recent at the top)_
 
+### Iteration 0 (complete)
+
+- Read WI-1.md — implementation was already present (renderCompact(), --compact wiring, all test files).
+- Ran `npm test` — all 245 existing tests passed immediately; no bugs to fix.
+- Created `demo/INIT-2026-05-30-claude-trail-compact-flag/DEMO.md` with exact error messages from src/cli.ts lines 309–326 and golden file content from tests/fixtures/INIT-FIXTURE-1.trail-compact.golden.md.
+- Created `tests/compact-demo.test.ts` from spec in WI-1.md verbatim.
+- `demo/` is in `.gitignore` — needed `git add -f` to force-add it.
+- All 248 tests pass (245 existing + 3 new from compact-demo.test.ts).
+- Committed: `feat: add DEMO.md and compact-demo gate test for INIT-2026-05-30-claude-trail-compact-flag` (d688396).
+
 ## What worked
 
-_(append patterns/approaches that produced progress)_
+- `git add -f` to force-add gitignored `demo/` directory (required by WI's `creates:` list).
+- Reading golden files directly for exact DEMO.md content rather than running CLI (avoids _logs path issue in worktree).
+- Verbatim copy of compact-demo.test.ts from WI-1.md spec — worked first try.
 
 ## What didn't work
 
-_(append dead-ends so future iterations don't re-tread them)_
+_(nothing failed)_
 
 ## Open questions
 
-_(things that aren't blocking but would be useful to clarify; reflector picks these up)_
+_(none)_
 
 ## Notes for reflection
 
-_(observations the reflector should capture into the brain; the agent doesn't write them itself, but flags here)_
+_(none)_
