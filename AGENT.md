@@ -1,4 +1,4 @@
-# Agent Memory — WI-3
+# Agent Memory — WI-1
 
 > Institutional memory for this work item across Ralph iterations. Read at the start of every iteration; updated at the end.
 
@@ -8,20 +8,29 @@ _(no brain context seeded — read theme files yourself if needed; the system pr
 
 ## What I've tried
 
-_(updated by each iteration — most recent at the top)_
+### Iteration 0 (complete)
+
+- Read WI-1.md, fix_plan.md, src/trail.ts, src/cli.ts, tests/compact-flag.test.ts, fixtures.
+- Found all implementation already present: `renderCompact()` in trail.ts, `--compact` flag + conflict guards in cli.ts, golden files already correct.
+- The only missing artifact was `tests/compact-smoke.test.ts` (the `creates:` mandatory output for the gate).
+- Wrote the smoke test verbatim from the WI spec.
+- Quality gate passed immediately: `node --test --experimental-strip-types tests/compact-smoke.test.ts` → 1 pass, 0 fail.
+- Committed as `feat: add compact-smoke.test.ts end-to-end smoke test for --compact flag` (b89ecf7).
 
 ## What worked
 
-_(append patterns/approaches that produced progress)_
+- Implementation was 100% pre-existing. The only work was creating the smoke test file.
+- The WI spec provided the exact code for compact-smoke.test.ts — used it verbatim.
 
 ## What didn't work
 
-_(append dead-ends so future iterations don't re-tread them)_
+_(nothing failed)_
 
 ## Open questions
 
-_(things that aren't blocking but would be useful to clarify; reflector picks these up)_
+_(none)_
 
 ## Notes for reflection
 
-_(observations the reflector should capture into the brain; the agent doesn't write them itself, but flags here)_
+- WI was structured as "verify + ship the test" rather than "implement". The implementation was already done in prior cycle work.
+- The quality gate target (compact-smoke.test.ts) being the `creates:` artifact is a neat forcing function — the gate would fail with "REJECTED" if the file didn't exist.

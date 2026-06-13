@@ -1,10 +1,17 @@
 # Fix Plan
 
-> Checklist for WI-3. Tick items as you complete them; add items as you discover sub-problems.
+> Checklist for WI-1. Tick items as you complete them; add items as you discover sub-problems.
 
-- [ ] AC1: GIVEN the fixture cycle-INIT-FIXTURE-1 with verdict=approve and total cost $0.24 WHEN the CLI is run with `INIT-FIXTURE-1 --compact` from a tmpdir containing that fixture THEN stdout matches tests/fixtures/INIT-FIXTURE-1.trail-compact.golden.md byte-for-byte (trimEnd comparison)
-- [ ] AC2: GIVEN the compact golden file exists at tests/fixtures/INIT-FIXTURE-1.trail-compact.golden.md WHEN its content is inspected THEN it contains exactly 3 non-empty lines: '# Trail — INIT-FIXTURE-1', 'Verdict: approve', 'Cost: $0.24'
-- [ ] AC3: GIVEN the CLI is invoked with `INIT-FIXTURE-1 --compact --format json` WHEN run from a tmpdir containing the INIT-FIXTURE-1 fixture THEN exit code is non-zero and stderr mentions '--compact'
-- [ ] AC4: GIVEN the CLI is invoked with `INIT-FIXTURE-1 --compact --out /tmp/x.md` WHEN run from a tmpdir containing the INIT-FIXTURE-1 fixture THEN exit code is non-zero and stderr mentions '--out'
-- [ ] AC5: GIVEN the CLI is invoked with `INIT-FIXTURE-1 --compact --since some-id` WHEN run from a tmpdir containing the INIT-FIXTURE-1 fixture THEN exit code is non-zero and stderr mentions '--since'
-- [ ] AC6: GIVEN the INIT-FIXTURE-1 fixture is run WITHOUT --compact WHEN `claude-trail INIT-FIXTURE-1` is executed THEN stdout matches the existing golden file INIT-FIXTURE-1.trail.golden.md byte-for-byte (full trail unchanged)
+- [x] AC1: GIVEN a valid cycle directory with events.jsonl containing verdict='approve' and total cost $0.24 WHEN claude-trail INIT-FIXTURE-1 --compact is run THEN stdout is exactly '# Trail — INIT-FIXTURE-1\nVerdict: approve\nCost: $0.24\n' and exit code is 0
+- [x] AC2: GIVEN CLI invoked with --compact and --format json together WHEN the CLI processes the flags THEN exit code is non-zero and stderr contains '--compact'
+- [x] AC3: GIVEN CLI invoked with --compact and --out together WHEN the CLI processes the flags THEN exit code is non-zero and stderr contains '--out'
+- [x] AC4: GIVEN CLI invoked with --compact and --since together WHEN the CLI processes the flags THEN exit code is non-zero and stderr contains '--since'
+- [x] AC5: GIVEN a cycle directory with no cycle.end event WHEN claude-trail <id> --compact is run THEN stdout shows 'Verdict: (unknown)' and 'Cost: $0.00' and exit code is 0
+- [x] AC6: GIVEN the existing INIT-FIXTURE-1 fixture WHEN claude-trail INIT-FIXTURE-1 (no --compact) is run THEN stdout matches the existing golden file INIT-FIXTURE-1.trail.golden.md byte-for-byte (trimEnd)
+
+## Notes
+
+- All implementation was already present in src/trail.ts (renderCompact) and src/cli.ts (--compact flag + conflict guards).
+- tests/compact-flag.test.ts already exercises all 6 ACs comprehensively.
+- The only missing artifact was tests/compact-smoke.test.ts (the creates: mandatory output).
+- Quality gate passes: `node --test --experimental-strip-types tests/compact-smoke.test.ts` → 1 pass, 0 fail.
