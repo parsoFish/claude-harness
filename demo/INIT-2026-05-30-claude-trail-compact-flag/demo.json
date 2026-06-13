@@ -1,0 +1,81 @@
+{
+  "title": "Add --compact flag to claude-trail for 3-line terminal glance output",
+  "essence": "claude-trail gains a --compact flag that emits a minimal 3-line markdown view (title, verdict, cost) — a terminal-glance shortcut with no change to the full trail output. Mutually exclusive with --format json, --out, and --since; missing data renders placeholder tokens.",
+  "project": "claude-harness",
+  "initiativeId": "INIT-2026-05-30-claude-trail-compact-flag",
+  "baseRef": "main",
+  "changedRef": "HEAD",
+  "diffStat": "AGENT.md                                           |  36 ++-\n demo/INIT-2026-05-30-claude-trail-compact-flag/DEMO.md |  55 ++++\n fix_plan.md                                        |  29 +-\n src/cli.ts                                         |  30 ++-\n src/trail.ts                                       |  18 ++\n tests/compact-basic.test.ts                        | 210 +++++++++++++++\n tests/compact-conflicts.test.ts                    | 294 +++++++++++++++++++++\n tests/compact-demo.test.ts                         |  25 ++\n tests/compact-flag.test.ts                         | 292 ++++++++++++++++++++\n tests/fixtures/INIT-FIXTURE-1.trail-compact.golden.md |   3 +\n 10 files changed, 963 insertions(+), 29 deletions(-)",
+  "checkpoints": [
+    {
+      "label": "main",
+      "caption": "Reviewer rationale: what to grep to convince yourself this works",
+      "beforeNote": "claude-trail had no --compact flag; running it always emitted the full multi-section markdown trail (summary, cost, git activity, filter phases). There was no way to get a quick single-glance summary from the terminal.",
+      "afterNote": "Running `claude-trail <id> --compact` now emits exactly 3 lines: `# Trail — <id>`, `Verdict: <verdict>`, `Cost: $<cost>`. Grep `renderCompact` in src/trail.ts to see the implementation. Grep `compactFlag` in src/cli.ts to see the wiring and the 3 mutual-exclusion guards. `tests/fixtures/INIT-FIXTURE-1.trail-compact.golden.md` pins the expected output. All 248 tests pass (`npm test`: 248 pass, 0 fail)."
+    }
+  ],
+  "acEvaluations": [
+    {
+      "criterion": "AC1: GIVEN a valid cycle directory with verdict=approve and cost=$0.24 WHEN `claude-trail INIT-FIXTURE-1 --compact` is run THEN stdout is exactly '# Trail — INIT-FIXTURE-1\\nVerdict: approve\\nCost: $0.24\\n' AND exit code is 0",
+      "verdict": "met",
+      "evidence": "test 'AC1: --compact stdout matches compact golden file' in tests/compact-flag.test.ts → pass (npm test: 248/248 green). Golden file tests/fixtures/INIT-FIXTURE-1.trail-compact.golden.md matches exact 3-line output."
+    },
+    {
+      "criterion": "AC2: GIVEN any valid cycle WHEN `claude-trail <id> --compact --format json` THEN exit non-zero AND stderr contains '--compact is not compatible with --format json'",
+      "verdict": "met",
+      "evidence": "test 'AC2: --compact --format json exits non-zero with error' in tests/compact-flag.test.ts → pass (npm test: 248/248 green). Guard: `if (compactFlag && formatValue === 'json')` in src/cli.ts line 309."
+    },
+    {
+      "criterion": "AC3: GIVEN any valid cycle WHEN `claude-trail <id> --compact --out /path` THEN exit non-zero AND stderr contains '--compact is not compatible with --out'",
+      "verdict": "met",
+      "evidence": "test 'AC3: --compact --out exits non-zero with error' in tests/compact-flag.test.ts → pass (npm test: 248/248 green). Guard: `if (compactFlag && outValue !== undefined)` in src/cli.ts line 315."
+    },
+    {
+      "criterion": "AC4: GIVEN any valid cycle WHEN `claude-trail <id> --compact --since <id>` THEN exit non-zero AND stderr contains '--compact is not compatible with --since'",
+      "verdict": "met",
+      "evidence": "test 'AC4: --compact --since exits non-zero with error' in tests/compact-flag.test.ts → pass (npm test: 248/248 green). Guard: `if (compactFlag && sinceValue !== undefined)` in src/cli.ts line 321."
+    },
+    {
+      "criterion": "AC5: GIVEN events.jsonl with no cycle.end event WHEN `claude-trail <id> --compact` THEN stdout shows 'Verdict: (unknown)' and 'Cost: $0.00' AND exit 0",
+      "verdict": "met",
+      "evidence": "tests/compact-basic.test.ts covers placeholder handling → pass (npm test: 248/248 green). extractCycleMeta() returns verdict '(unknown)' when no terminal event; costUsd defaults to 0 → '$0.00'."
+    },
+    {
+      "criterion": "AC6: GIVEN INIT-FIXTURE-1 fixture WHEN `claude-trail INIT-FIXTURE-1` (no --compact) THEN stdout matches INIT-FIXTURE-1.trail.golden.md byte-for-byte",
+      "verdict": "met",
+      "evidence": "test 'AC3: stdout matches INIT-FIXTURE-1.trail.golden.md (path-normalised)' in tests/verdict-summary.test.ts → pass (npm test: 248/248 green). Full trail code path is unchanged."
+    },
+    {
+      "criterion": "AC7: GIVEN this initiative is merged THEN tests/fixtures/INIT-FIXTURE-1.trail-compact.golden.md exists with 3-line compact output",
+      "verdict": "met",
+      "evidence": "File tests/fixtures/INIT-FIXTURE-1.trail-compact.golden.md present in branch diff (git diff --name-only main...HEAD). Content: '# Trail — INIT-FIXTURE-1\\nVerdict: approve\\nCost: $0.24\\n'."
+    }
+  ],
+  "testEvidence": [
+    { "name": "npm test (full suite — 248 tests)", "result": "pass", "delta": "248 pass, 0 fail, 0 skip" },
+    { "name": "compact-flag.test.ts — AC1: --compact stdout matches compact golden", "result": "pass" },
+    { "name": "compact-flag.test.ts — AC2: --compact --format json exits non-zero", "result": "pass" },
+    { "name": "compact-flag.test.ts — AC3: --compact --out exits non-zero", "result": "pass" },
+    { "name": "compact-flag.test.ts — AC4: --compact --since exits non-zero", "result": "pass" },
+    { "name": "compact-basic.test.ts — placeholder handling (unknown verdict, zero cost)", "result": "pass" },
+    { "name": "compact-conflicts.test.ts — all mutual-exclusion error paths", "result": "pass" },
+    { "name": "compact-demo.test.ts — demo gate test", "result": "pass" },
+    { "name": "verdict-summary.test.ts — full trail golden unchanged", "result": "pass" }
+  ],
+  "filesChanged": [
+    { "path": "src/trail.ts", "note": "Added renderCompact() — 3-line markdown renderer" },
+    { "path": "src/cli.ts", "note": "Parsed --compact flag; added 3 mutual-exclusion guards; wired compact output branch" },
+    { "path": "tests/compact-flag.test.ts", "note": "Integration tests for --compact (AC1–AC4)" },
+    { "path": "tests/compact-basic.test.ts", "note": "Tests for renderCompact() unit behaviour and placeholder handling" },
+    { "path": "tests/compact-conflicts.test.ts", "note": "Tests for all flag-conflict error paths" },
+    { "path": "tests/fixtures/INIT-FIXTURE-1.trail-compact.golden.md", "note": "Golden file pinning compact output for INIT-FIXTURE-1" },
+    { "path": "tests/compact-demo.test.ts", "note": "Demo gate test" },
+    { "path": "demo/INIT-2026-05-30-claude-trail-compact-flag/DEMO.md", "note": "Human-readable demo (derived from demo.json)" }
+  ],
+  "usage_example": "# Terminal glance — get verdict + cost for an initiative in one line:\nclaude-trail INIT-2026-05-30-some-initiative --compact\n# Output:\n# Trail — INIT-2026-05-30-some-initiative\n# Verdict: approve\n# Cost: $0.24\n\n# Error paths (all exit 1):\nclaude-trail INIT-X --compact --format json   # Error: --compact cannot be used with --format json\nclaude-trail INIT-X --compact --out out.md    # Error: --compact cannot be used with --out\nclaude-trail INIT-X --compact --since cycle-Y # Error: --compact cannot be used with --since",
+  "impact": [
+    "Operators can glance at initiative outcome in 3 lines from any terminal without scrolling through the full trail",
+    "Scriptable: exit 0 on success means `claude-trail <id> --compact && deploy` patterns work",
+    "Zero regression risk: existing full trail output is byte-for-byte unchanged (golden-pinned)"
+  ]
+}
