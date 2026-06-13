@@ -1,39 +1,24 @@
-# Agent Memory — WI-1
+# Unifier Agent Memory — INIT-2026-05-30-claude-trail-compact-flag
 
-> Institutional memory for this work item across Ralph iterations. Read at the start of every iteration; updated at the end.
+> Institutional memory across unifier-Ralph iterations. Read at the start of every iteration; updated at the end.
 
-## Brain context (loaded at iteration 1)
-
-_(no brain context seeded — read theme files yourself if needed; the system prompt has the navigation index.)_
-
-## What I've tried
+## What I tried
 
 _(updated by each iteration — most recent at the top)_
 
-### Iteration 0 (complete)
+### Iteration 1 (unifier)
 
-- Read WI-1.md — implementation was already present (renderCompact(), --compact wiring, all test files).
-- Ran `npm test` — all 245 existing tests passed immediately; no bugs to fix.
-- Created `demo/INIT-2026-05-30-claude-trail-compact-flag/DEMO.md` with exact error messages from src/cli.ts lines 309–326 and golden file content from tests/fixtures/INIT-FIXTURE-1.trail-compact.golden.md.
-- Created `tests/compact-demo.test.ts` from spec in WI-1.md verbatim.
-- `demo/` is in `.gitignore` — needed `git add -f` to force-add it.
-- All 248 tests pass (245 existing + 3 new from compact-demo.test.ts).
-- Committed: `feat: add DEMO.md and compact-demo gate test for INIT-2026-05-30-claude-trail-compact-flag` (d688396).
-
-## What worked
-
-- `git add -f` to force-add gitignored `demo/` directory (required by WI's `creates:` list).
-- Reading golden files directly for exact DEMO.md content rather than running CLI (avoids _logs path issue in worktree).
-- Verbatim copy of compact-demo.test.ts from WI-1.md spec — worked first try.
-
-## What didn't work
-
-_(nothing failed)_
-
-## Open questions
-
-_(none)_
+- Read WI-1.md, fix_plan.md, AGENT.md, manifest. Verified git log: all per-WI dev work already committed (src/cli.ts, src/trail.ts, compact tests, golden file).
+- Ran `npm test` → 248 pass, 0 fail, 0 skip. Gate green.
+- Wrote `demo/INIT-2026-05-30-claude-trail-compact-flag/demo.json` (all 7 ACs evaluated with concrete test evidence).
+- Ran `renderDemoBundle` directly via node (forge demo render fails from worktree CWD due to pm-invocation.ts module-load CWD issue — workaround: call renderDemoBundle directly). DEMO.md + DEMO.html rendered successfully.
+- Wrote `.forge/pr-description.md` (substantive Why/What/How; no ## Demo section).
+- Force-added all files (demo/ and .forge/ are gitignored; -f required).
+- Committed as `feat(INIT-2026-05-30-claude-trail-compact-flag): unify and demo`.
+- Pushed to origin — branches in sync.
 
 ## Notes for reflection
 
-_(none)_
+_(observations the reflector should capture into the brain)_
+
+- **`forge demo render` fails from worktree CWD**: `pm-invocation.ts` is imported as a module-level side-effect and calls `deriveAgentSpec('skills/project-manager/SKILL.md', process.cwd())` before `cli.ts` can `process.chdir(FORGE_ROOT)`. Workaround: call `renderDemoBundle` directly via `node --experimental-strip-types -e "import ... renderDemoBundle(...)"`. This is repeatable and safe.
